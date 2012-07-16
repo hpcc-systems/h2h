@@ -678,7 +678,8 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
             unsigned bytesWrittenSinceLastFlush = 0;
             char filepartname[1024];
             memset(&filepartname[0], 0, sizeof(filepartname));
-            sprintf(filepartname, "%s_%d_%d", filename, node, clustercount);
+            sprintf(filepartname, "%s-parts/part_%d_%d", filename, nodeid, clustercount);
+
             if (hdfsExists(fs, filepartname) == 0)
             {
 
@@ -743,6 +744,12 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
                 return EXIT_FAILURE;
             }
 
+            if (deleteparts)
+            {
+                sprintf(filepartname, "%s-parts", filename);
+                hdfsDelete(fs, filepartname);
+            }
+
             fprintf(stderr, "Closing writefile %s\n", filename);
             hdfsCloseFile(fs, writeFile);
         }
@@ -760,7 +767,7 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
     }
 
     char filepartname[1024];
-    sprintf(filepartname, "%s_%d_%d", filename, nodeid, clustercount);
+    sprintf(filepartname, "%s-parts/part_%d_%d", filename, nodeid, clustercount);
 
     hdfsFile writeFile = hdfsOpenFile(fs, filepartname, O_CREAT | O_WRONLY, 0, 1, 0);
 
