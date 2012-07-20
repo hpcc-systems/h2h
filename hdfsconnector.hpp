@@ -20,6 +20,7 @@
 #include <vector>
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include "hdfs.h"
 
