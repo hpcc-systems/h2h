@@ -1154,8 +1154,14 @@ int main(int argc, char **argv)
     }
     else
     {
-        fprintf(stderr, "Could not connect to hdfs on %s:%d", hadoopHost, hadoopPort);
-        return returnCode;
+        fprintf(stderr, "Could not connect to hdfs on %s:%d\n", hadoopHost, hadoopPort);
+        if(action == HPA_STREAMOUTPIPE)
+        {
+            fprintf(stderr, "Attempting to close named pipe: %s\n", pipepath);
+            ifstream in;
+            in.open(pipepath, ios::in | ios::binary);
+            in.close();
+        }
     }
     return returnCode;
 }
