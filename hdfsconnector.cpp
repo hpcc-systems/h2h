@@ -676,15 +676,16 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
             }
 
             unsigned bytesWrittenSinceLastFlush = 0;
-            char filepartname[1024];
-            memset(&filepartname[0], 0, sizeof(filepartname));
-            sprintf(filepartname, "%s-parts/part_%d_%d", filename, nodeid, clustercount);
 
-            if (hdfsExists(fs, filepartname) == 0)
+            string filepartname;
+
+            createFilePartName(&filepartname, filename, nodeid, clustercount);
+
+            if (hdfsExists(fs, filepartname.c_str()) == 0)
             {
 
-                fprintf(stderr, "Opening readfile  %s\n", filepartname);
-                hdfsFile readFile = hdfsOpenFile(fs, filepartname, O_RDONLY, 0, 0, 0);
+                fprintf(stderr, "Opening readfile  %s\n", filepartname.c_str());
+                hdfsFile readFile = hdfsOpenFile(fs, filepartname.c_str(), O_RDONLY, 0, 0, 0);
                 if (!readFile)
                 {
                     fprintf(stderr, "Failed to open %s for reading!\n", filename);
@@ -730,24 +731,25 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
                     return EXIT_FAILURE;
                 }
 
-                fprintf(stderr, "Closing readfile  %s\n", filepartname);
+                fprintf(stderr, "Closing readfile  %s\n", filepartname.c_str());
                 hdfsCloseFile(fs, readFile);
 
                 if (deleteparts)
                 {
-                    hdfsDelete(fs, filepartname);
+                    hdfsDelete(fs, filepartname.c_str());
                 }
             }
             else
             {
-                fprintf(stderr, "Could not merge, part %s was not located\n", filepartname);
+                fprintf(stderr, "Could not merge, part %s was not located\n", filepartname.c_str());
                 return EXIT_FAILURE;
             }
 
             if (deleteparts)
             {
-                sprintf(filepartname, "%s-parts", filename);
-                hdfsDelete(fs, filepartname);
+                filepartname.assign(filename);
+                filepartname.append("-parts");
+                hdfsDelete(fs, filepartname.c_str());
             }
 
             fprintf(stderr, "Closing writefile %s\n", filename);
@@ -766,18 +768,19 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
         return RETURN_FAILURE;
     }
 
-    char filepartname[1024];
-    sprintf(filepartname, "%s-parts/part_%d_%d", filename, nodeid, clustercount);
+    string filepartname;
 
-    hdfsFile writeFile = hdfsOpenFile(fs, filepartname, O_CREAT | O_WRONLY, 0, 1, 0);
+    createFilePartName(&filepartname, filename, nodeid, clustercount);
+
+    hdfsFile writeFile = hdfsOpenFile(fs, filepartname.c_str(), O_CREAT | O_WRONLY, 0, 1, 0);
 
     if (!writeFile)
     {
-        fprintf(stderr, "Failed to open %s for writing!\n", filepartname);
+        fprintf(stderr, "Failed to open %s for writing!\n", filepartname.c_str());
         return RETURN_FAILURE;
     }
 
-    fprintf(stderr, "Opened HDFS file %s for writing successfully...\n", filepartname);
+    fprintf(stderr, "Opened HDFS file %s for writing successfully...\n", filepartname.c_str());
 
     fprintf(stderr, "Opening pipe:  %s \n", fileorpipename);
 
@@ -792,7 +795,7 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
     size_t totalbytesread = 0;
     size_t totalbyteswritten = 0;
 
-    fprintf(stderr, "Writing %s to HDFS.", filepartname);
+    fprintf(stderr, "Writing %s to HDFS.", filepartname.c_str());
     while (!in.eof())
     {
         memset(&char_ptr[0], 0, sizeof(char_ptr));
@@ -807,7 +810,7 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
         {
             if (hdfsFlush(fs, writeFile))
             {
-                fprintf(stderr, "Failed to 'flush' %s\n", filepartname);
+                fprintf(stderr, "Failed to 'flush' %s\n", filepartname.c_str());
                 return EXIT_FAILURE;
             }
         }
@@ -816,7 +819,7 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
 
     if (hdfsFlush(fs, writeFile))
     {
-        fprintf(stderr, "Failed to 'flush' %s\n", filepartname);
+        fprintf(stderr, "Failed to 'flush' %s\n", filepartname.c_str());
         return EXIT_FAILURE;
     }
 

@@ -20,6 +20,7 @@
 #include <vector>
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include "hdfs.h"
 
@@ -30,6 +31,20 @@ using std::vector;
 
 #define EOL "\n"
 #define RETURN_FAILURE -1
+
+
+static inline void createFilePartName(string * filepartname, const char * filename, unsigned int nodeid, unsigned int clustercount)
+{
+    filepartname->append(filename);
+    filepartname->append("-parts/part_");
+    stringstream ss;
+    ss << nodeid;
+    filepartname->append(ss.str());
+    filepartname->append("_");
+    ss.str("");
+    ss << clustercount;
+    filepartname->append(ss.str());
+}
 
 class Hdfs_Connector
 {
