@@ -678,15 +678,8 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
             unsigned bytesWrittenSinceLastFlush = 0;
 
             string filepartname;
-            filepartname.append(filename);
-            filepartname.append("-parts/part_");
-            stringstream ss;
-            ss << nodeid;
-            filepartname.append(ss.str());
-            filepartname.append("_");
-            ss.str("");
-            ss << clustercount;
-            filepartname.append(ss.str());
+
+            createFilePartName(&filepartname, filename, nodeid, clustercount);
 
             if (hdfsExists(fs, filepartname.c_str()) == 0)
             {
@@ -776,15 +769,8 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
     }
 
     string filepartname;
-    filepartname.append(filename);
-    filepartname.append("-parts/part_");
-    stringstream ss;
-    ss << nodeid;
-    filepartname.append(ss.str());
-    filepartname.append("_");
-    ss.str("");
-    ss << clustercount;
-    filepartname.append(ss.str());
+
+    createFilePartName(&filepartname, filename, nodeid, clustercount);
 
     hdfsFile writeFile = hdfsOpenFile(fs, filepartname.c_str(), O_CREAT | O_WRONLY, 0, 1, 0);
 
@@ -1171,14 +1157,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        fprintf(stderr, "Could not connect to hdfs on %s:%d\n", hadoopHost, hadoopPort);
-        if(action == HPA_STREAMOUTPIPE)
-        {
-            fprintf(stderr, "Attempting to close named pipe: %s\n", pipepath);
-            ifstream in;
-            in.open(pipepath, ios::in | ios::binary);
-            in.close();
-        }
+        fprintf(stderr, "Could not connect to HDFS on %s:%d\n", hadoopHost, hadoopPort);
     }
     return returnCode;
 }
