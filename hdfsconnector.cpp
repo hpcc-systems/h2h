@@ -1157,8 +1157,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        fprintf(stderr, "Could not connect to hdfs on %s:%d", hadoopHost, hadoopPort);
-        return returnCode;
+        fprintf(stderr, "Could not connect to HDFS on %s:%d\n", hadoopHost, hadoopPort);
     }
     return returnCode;
 }

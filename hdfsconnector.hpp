@@ -70,7 +70,7 @@ private:
     ~Hdfs_Connector()
     {
         if (fs)
-            fprintf(stderr, "\nhdfsDisconnect returned: %d", hdfsDisconnect(fs));
+            fprintf(stderr, "\nhdfsDisconnect returned: %d\n", hdfsDisconnect(fs));
     };
 
     hdfsFS getHdfsFS();
