@@ -146,21 +146,38 @@ if (NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.1")
         endif ()
 
     endif ( CMAKE_SYSTEM MATCHES Linux )
-   # if ( EXISTS ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
-   #     include( ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
-   # else()
-   #     message("-- WARNING: DEPENDENCY FILE FOR ${packageRevision} NOT FOUND, Using deps template.")
-   #     include( ${CMAKE_MODULE_PATH}/dependencies/template.cmake )
-   # endif()
+    if ( EXISTS ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
+        include( ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
+    else()
+        message("-- WARNING: DEPENDENCY FILE FOR ${packageRevision} NOT FOUND, Using deps template.")
+        include( ${CMAKE_MODULE_PATH}/dependencies/template.cmake )
+    endif()
 else()
     message("WARNING: CMAKE 2.8.1 or later required to create RPMs from this project")
 endif()
 
-
 add_subdirectory (ecl)
-option(HADOOP_PATH "Set the Hadoop path.")
-if( NOT HADOOP_PATH )
-    set(HADOOP_PATH "/usr/local/hadoop")
+
+#IF TARBALLED_HADOOP_PATH IS NOT PASSED IN, DEFAULT TO /usr/local/hadoop
+#AT BUILD TIME THIS PATH WILL BE USED TO SEARCH FOR:
+# ${TARBALLED_HADOOP_PATH}/src/c++/libhdfs/hdfs.h
+# ${TARBALLED_HADOOP_PATH}/c++/${osdir}/libhdfs.so
+
+#AT RUN TIME THIS PATH WILL BE USED TO SEARCH FOR:
+# ${TARBALLED_HADOOP_PATH}/conf
+# ${TARBALLED_HADOOP_PATH}/*.jar
+# ${TARBALLED_HADOOP_PATH}/lib/*.jar
+
+#####################################################
+# hadoop install packages layout files in this manner:
+# conf files  -> /etc/hadoop
+# *.jar files -> /usr/share/hadoop & /usr/share/hadoop/lib
+# hdfslib     -> /usr/lib or /usr/lib64
+#####################################################
+
+option(TARBALLED_HADOOP_PATH "Set the Hadoop path.")
+if( NOT TARBALLED_HADOOP_PATH )
+    SET (TARBALLED_HADOOP_PATH "/usr/local/hadoop")
 endif()
 
 #set other paths
@@ -169,13 +186,18 @@ endif()
 
 SET ( HPCC_ETC_DIR "${CMAKE_INSTALL_PREFIX}/${OSSDIR}/etc")
 SET ( HPCC_CONF_DIR "${CMAKE_INSTALL_PREFIX}/${OSSDIR}${CONFIG_DIR}")
-SET ( HDFSCONN_CONF_FILE "hdfsconnector.conf")
+SET ( HDFSCONN_CONF_FILE "hdfsconnector.conf" )
+SET ( HDFSCONN_EXE_NAME "hdfsconnector" )
+SET ( HDFSCONN_EXE_PATH "${EXEC_PATH}/${HDFSCONN_EXE_NAME}")
 
-configure_file("hdfsconnector.conf.in" "hdfsconnector.conf")
-configure_file("hdfspipe.in" "hdfspipe" @ONLY )
+SET ( HADOOP_STD_CONF_PATH "/etc/hadoop" )
+SET ( HADOOP_STD_SHARE_PATH "/usr/share/hadoop" )
 
 find_package(JNI REQUIRED)
 find_package(LIBHDFS REQUIRED)
+
+configure_file("hdfsconnector.conf.in" "hdfsconnector.conf")
+configure_file("hdfspipe.in" "hdfspipe" @ONLY )
 
 SET ( SRC hdfsconnector.cpp hdfsconnector.hpp)
 
@@ -188,7 +210,7 @@ include_directories (
                       ${LIBHDFS_INCLUDE_DIR}  
                      )
 
-HPCC_ADD_EXECUTABLE( hdfsconnector ${SRC} )
+HPCC_ADD_EXECUTABLE( ${HDFSCONN_EXE_NAME} ${SRC} )
 
 SET ( INSTALLDIR "${OSSDIR}/bin")
 Install ( TARGETS hdfsconnector DESTINATION ${INSTALLDIR} COMPONENT Runtime)

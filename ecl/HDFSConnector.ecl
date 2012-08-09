@@ -4,11 +4,11 @@ Pipe data to and from Hadoop
 It is necessary to add this option to your workunit:
 #option('pickBestEngine', 0);
 
-This will force your HadoopPipe job to run on the target cluster (as opposed to the optimizer
+This will force your HDFSConnector job to run on the target cluster (as opposed to the optimizer
 picking hThor when you've selected Thor, for instance) so that the data lands where you want
 it.
 
-For HadoopOut to work HDFS must have append support enabled.  Be default it's disabled.  To
+For PipeOutAndMerge to work the target HDFS must have append support enabled.  Be default it's disabled.  To
 enable it add this to hdfs-site.xml:
 		<property>
 			<name>dfs.support.append</name>
@@ -22,16 +22,16 @@ import std;
 EXPORT HDFSConnector := MODULE
 
     /*
-   * HDFSConnector.PipeIn - this macro to be called by the user to pipe in data from the Hadoop file system (HDFS).
-     *
-     * @param ECL_RS            The ECL recordset to pipe into.
-     * @param HadoopFileName    The fully qualified target HDFS file name.
-     * @param Layout            The structure which describes the ECL_RS recordset.
-     * @param HadoopFileFormat  The Hadoop data file format : FLAT | CSV.
-     * @param HDFSHost          The Hadoop DFS host name or IP address.
-     * @param HDSFPort          The Hadoop DFS port number.
-     *                              If targeting a local HDFS HDFSHost='default' and HDSFPort=0 will work
-     *                              As long as the local hadoop conf folder is visible to the 'hdfspipe' script
+     HDFSConnector.PipeIn - this macro to be called by the user to pipe in data from the Hadoop file system (HDFS).
+
+     @param ECL_RS            The ECL recordset to pipe into.
+     @param HadoopFileName    The fully qualified target HDFS file name.
+     @param Layout            The structure which describes the ECL_RS recordset.
+     @param HadoopFileFormat  The Hadoop data file format : FLAT | CSV.
+     @param HDFSHost          The Hadoop DFS host name or IP address.
+     @param HDSFPort          The Hadoop DFS port number.
+                                  If targeting a local HDFS HDFSHost='default' and HDSFPort=0 will work
+                                  As long as the local hadoop conf folder is visible to the 'hdfspipe' script
     */
 
 	export PipeIn(ECL_RS, HadoopFileName, Layout, HadoopFileFormat, HDFSHost, HDSFPort) := MACRO
@@ -72,35 +72,22 @@ EXPORT HDFSConnector := MODULE
 				Layout, HadoopFileFormat);
 
 		#ELSEIF (%formatstr%[1..3] = 'CSV')
-		 #uniquename(termpos)
-		 %termpos% := STD.Str.Find(%formatstr%, 'TERMINATOR');
+			#uniquename(quoteseq)
+			%quoteseq% := REGEXFIND('(.*)(?i)(QUOTE)(\\s*\\(\\s*)(\'.*?\')\\s*\\)\\s*,?', %formatstr%,4);
 
-			#IF(%termpos% > 0)
-				#uniquename(termcont)
-				#uniquename(termcont2)
-				%termcont% := %formatstr%[%termpos%+11..];
-				%termcont2%:= %termcont%[..STD.Str.Find(%termcont%, ')')-1];
+			#uniquename(terminatorseq)
+			%terminatorseq% := REGEXFIND('(.*)(?i)(TERMINATOR)(\\s*\\(\\s*)(\'.*?\')\\s*\\)\\s*,?', %formatstr%,4);
 
-				ECL_RS:= PIPE('hdfspipe -si '
-				+ ' -nodeid ' + STD.system.Thorlib.node()
-				+ ' -clustercount ' + STD.system.Thorlib.nodes()
-				+ ' -maxlen ' + sizeof(Layout, MAX)
-				+ ' -filename ' + HadoopFileName
-				+ ' -format '	+  %formatstr%[1..3]
-				+ ' -terminator ' + %termcont2%
-				//+ ' -outputterminator 1'
-				+ ' -host ' + HDFSHost	+ ' -port ' + HDSFPort,
-				Layout, HadoopFileFormat);
-			#ELSE
-				ECL_RS:= PIPE('hdfspipe -si '
-				+ ' -nodeid ' + STD.system.Thorlib.node()
-				+ ' -clustercount ' + STD.system.Thorlib.nodes()
-				+ ' -maxlen ' + sizeof(Layout, MAX)
-				+ ' -filename ' + HadoopFileName
-				+ ' -format '	+  %formatstr%[1..3]
-				+ ' -host ' + HDFSHost	+ ' -port ' + HDSFPort,
-				Layout, HadoopFileFormat);
-			#END
+			ECL_RS:= PIPE('hdfspipe -si '
+			+ ' -host ' + HDFSHost	+ ' -port ' + HDSFPort
+			+ ' -nodeid ' + STD.system.Thorlib.node()
+			+ ' -clustercount ' + STD.system.Thorlib.nodes()
+			+ ' -maxlen ' + sizeof(Layout, MAX)
+			+ ' -filename ' + HadoopFileName
+			+ ' -format CSV'
+			+ ' -terminator ' + %terminatorseq%
+			+ ' -quote ' + '\'' + %quoteseq% + '\''
+			, Layout, HadoopFileFormat);
 		#ELSE
 				ECL_RS:= PIPE('hdfspipe -si'
 				+ ' -nodeid ' + STD.system.Thorlib.node()
