@@ -81,7 +81,8 @@ fi
 username=`id -nu`
 echo "Script starting"		>> $LOG
 echo "Running as user: $username"   >> $LOG
-echo "Incoming params: ${@}"    >> $LOG
+echo 'Incoming params: '          >> $LOG
+echo $(printf '%q ' ${@})            >> $LOG
 echo "nodeid: $nodeid" 		>> $LOG
 
 h2hpid=0;
@@ -93,12 +94,12 @@ then
 	exit 1;
 elif [ $1 = "-mf" ];
 then
-    @HDFSCONN_EXE_PATH@ "${@}"      2>> $LOG;
+    @HDFSCONN_EXE_PATH@ ${@}      2>> $LOG;
     h2hstatus=$?;
     h2hpid=$!;
 elif [ $1 = "-si" ];
 then
-    @HDFSCONN_EXE_PATH@  "${@}"      2>> $LOG;
+    @HDFSCONN_EXE_PATH@  ${@}      2>> $LOG;
     h2hstatus=$?
     h2hpid=$!;
 elif [ $1 = "-so" ];
@@ -119,7 +120,7 @@ then
 
     echo "calling hdfsconnector..."         >> $LOG
 
-    @HDFSCONN_EXE_PATH@ "${@}" -pipepath $HPCCTMPFILE  	2>> $LOG
+    @HDFSCONN_EXE_PATH@ ${@} -pipepath $HPCCTMPFILE  	2>> $LOG
     h2hpid=$!;
     h2hstatus=$?;
 elif [ $1 = "-sop" ];
@@ -137,7 +138,7 @@ then
         echo "  WARNING (hdfsconnector mkfifo) error registered in file: $PIPERRLOG " >> $LOG
         exit 1
     fi
-    @HDFSCONN_EXE_PATH@  "${@}" -pipepath $pipepath	2>> $LOG &
+    @HDFSCONN_EXE_PATH@  ${@} -pipepath $pipepath	2>> $LOG &
 
     h2hpid=$!;
 
