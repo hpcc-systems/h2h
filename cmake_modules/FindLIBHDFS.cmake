@@ -30,7 +30,9 @@ if (NOT LIBHDFS_FOUND)
     SET (libhdfs_libs "hdfs" "libhdfs")
   ENDIF()
 
-  IF (NOT ${EXTERNALS_DIRECTORY} STREQUAL "")
+  IF (NOT USE_NATIVE_LIBRARIES)
+    MESSAGE("-- Searching for libhdfs: NOT using native libraries")
+    MESSAGE("--  Will use tarballed location ( ${TARBALLED_HADOOP_PATH}) to find header file and lib file.")
     IF (UNIX)
       IF (${ARCH64BIT} EQUAL 1)
         SET (hdfsosdir "Linux-amd64-64")
@@ -42,26 +44,40 @@ if (NOT LIBHDFS_FOUND)
     ELSE()
       SET (hdfsosdir "unknown")
     ENDIF()
-    #If EXTERNALS_DIRECTORY, then hadoop tar install was used
     IF (NOT ("${hdfsosdir}" STREQUAL "unknown"))
-      FIND_PATH (LIBHDFS_INCLUDE_DIR NAMES libhdfs/hdfs.h PATHS "${EXTERNALS_DIRECTORY}/${TARBALLED_HADOOP_PATH}/src/c++" NO_DEFAULT_PATH)
-      FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${EXTERNALS_DIRECTORY}/${TARBALLED_HADOOP_PATH}/c++/${hdfsosdir}" NO_DEFAULT_PATH)
+      FIND_PATH (LIBHDFS_INCLUDE_DIR NAMES hdfs.h PATHS "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs" NO_DEFAULT_PATH)
+      FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${TARBALLED_HADOOP_PATH}/c++/${hdfsosdir}/lib" NO_DEFAULT_PATH)
     ENDIF()
-  ENDIF()
+  ELSE()
+    MESSAGE("-- Searching for libhdfs using native libraries location.")
+    MESSAGE("--  Will use tarballed location (${TARBALLED_HADOOP_PATH}) to find header file.")
 
-  if (USE_NATIVE_LIBRARIES)
-    # if we didn't find in externals, look in system include path
+    IF (UNIX)
+      IF (${ARCH64BIT} EQUAL 1)
+        SET (libhdfspath "/usr/lib64")
+      ELSE()
+        SET (libhdfspath "/usr/lib")
+      ENDIF()
+    ELSEIF(WIN32)
+      SET (libhdfspaths "lib")
+    ELSE()
+      SET (libhdfspaths "unknown")
+    ENDIF()
 
     # standard install doesn't include header, look in untared location
     FIND_PATH (LIBHDFS_INCLUDE_DIR NAMES hdfs.h PATHS "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs" )
-    # look for lib in standard location.
-    FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs})
 
-  endif()
-  include(FindPackageHandleStandardArgs)
+    IF (NOT ("${libhdfspaths}" STREQUAL "unknown"))
+         #FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${libhdfspaths}")
+    ENDIF()
+
+  ENDIF()
+  INCLUDE(FindPackageHandleStandardArgs)
+
   find_package_handle_standard_args(Libhdfs DEFAULT_MSG
     LIBHDFS_LIBRARIES
     LIBHDFS_INCLUDE_DIR
   )
+
   MARK_AS_ADVANCED(LIBHDFS_INCLUDE_DIR LIBHDFS_LIBRARIES )
 ENDIF()
