@@ -68,7 +68,7 @@ if (NOT LIBHDFS_FOUND)
     FIND_PATH (LIBHDFS_INCLUDE_DIR NAMES hdfs.h PATHS "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs" )
 
     IF (NOT ("${libhdfspaths}" STREQUAL "unknown"))
-         #FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${libhdfspaths}")
+         FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${libhdfspaths}")
     ENDIF()
 
   ENDIF()
