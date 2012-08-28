@@ -48,11 +48,9 @@ IF ("${COMMONSETUP_DONE}" STREQUAL "")
   option(DOCS_DRUPAL "Create Drupal HTML Docs" OFF)
   option(DOCS_EPUB "Create EPUB Docs" OFF)
   option(DOCS_MOBI "Create Mobi Docs" OFF)
-  
-  option(PORTALURL "Set url to hpccsystems portal download page")
 
-  if ( NOT PORTALURL )
-    set( PORTALURL "http://hpccsystems.com/download" )
+  if ( MAKE_DOCS_ONLY )
+    set( MAKE_DOCS ON )
   endif()
 
   ##########################################################
