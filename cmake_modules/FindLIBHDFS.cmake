@@ -59,16 +59,16 @@ if (NOT LIBHDFS_FOUND)
         SET (libhdfspath "/usr/lib")
       ENDIF()
     ELSEIF(WIN32)
-      SET (libhdfspaths "lib")
+      SET (libhdfspath "lib")
     ELSE()
-      SET (libhdfspaths "unknown")
+      SET (libhdfspath "unknown")
     ENDIF()
 
     # standard install doesn't include header, look in untared location
     FIND_PATH (LIBHDFS_INCLUDE_DIR NAMES hdfs.h PATHS "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs" )
 
     IF (NOT ("${libhdfspaths}" STREQUAL "unknown"))
-         #FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${libhdfspaths}")
+         FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${libhdfspath}")
     ENDIF()
 
   ENDIF()
