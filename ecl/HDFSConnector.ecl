@@ -78,16 +78,25 @@ EXPORT HDFSConnector := MODULE
 			#uniquename(terminatorseq)
 			%terminatorseq% := REGEXFIND('(.*)(?i)(TERMINATOR)(\\s*\\(\\s*)(\'.*?\')\\s*\\)\\s*,?', %formatstr%,4);
 
-			ECL_RS:= PIPE('hdfspipe -si '
-			+ ' -host ' + HDFSHost	+ ' -port ' + HDSFPort
-			+ ' -nodeid ' + STD.system.Thorlib.node()
-			+ ' -clustercount ' + STD.system.Thorlib.nodes()
-			+ ' -maxlen ' + sizeof(Layout, MAX)
-			+ ' -filename ' + HadoopFileName
-			+ ' -format CSV'
-			+ ' -terminator ' + %terminatorseq%
-			+ ' -quote ' + '\'' + %quoteseq% + '\''
-			, Layout, HadoopFileFormat);
+			#uniquename(pipecmndstr)
+            %pipecmndstr% := 'hdfspipe -si '
+              + ' -host ' + HDFSHost    + ' -port ' + HDSFPort
+                + ' -nodeid ' + STD.system.Thorlib.node()
+                + ' -clustercount ' + STD.system.Thorlib.nodes()
+                + ' -maxlen ' + sizeof(Layout, MAX)
+                + ' -filename ' + HadoopFileName
+                + ' -format CSV'
+
+            #IF ( LENGTH(%terminatorseq%) > 0)
+                + ' -terminator ' + %terminatorseq%
+            #END
+
+            #IF ( LENGTH(%quoteseq%) > 0)
+                + ' -quote ' + '\'' + %quoteseq% + '\''
+            #END
+                ; //Do not remove terminating semicolon
+
+            ECL_RS:= PIPE( %pipecmndstr%, Layout, HadoopFileFormat);
 		#ELSE
 				ECL_RS:= PIPE('hdfspipe -si'
 				+ ' -nodeid ' + STD.system.Thorlib.node()
