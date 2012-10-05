@@ -94,7 +94,7 @@ EXPORT HDFSConnector := MODULE
             #IF ( LENGTH(%quoteseq%) > 0)
                 + ' -quote ' + '\'' + %quoteseq% + '\''
             #END
-                + '';
+                ; //Do not remove terminating semicolon
 
             ECL_RS:= PIPE( %pipecmndstr%, Layout, HadoopFileFormat);
 		#ELSE
