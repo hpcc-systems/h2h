@@ -70,9 +70,12 @@
 
       <listitem>
         <para>Edit the configuration file <emphasis
-        role="bluebold">/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</emphasis>.</para>
+        role="bluebold">/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</emphasis>.
+        </para>
 
-        <para>The configuration file contains one line:</para>
+        <para>There are some configuration examples in the default
+        configuration file. One very important aspect of the configuration
+        file is the following line:</para>
 
         <programlisting>HADOOP_LOCATION=/usr/local/hadoop</programlisting>
 

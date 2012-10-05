@@ -29,8 +29,11 @@
               <para>The configuration file
               (/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf)</para>
 
-              <para>The configuration file contains the location where Hadoop
-              is installed, as shown in the example below: </para>
+              <para>There are some examples in the default configuration file
+              depicting some different configuration options. </para>
+
+              <para>This file contains the location where Hadoop is installed,
+              as shown in the example below:</para>
 
               <programlisting>HADOOP_LOCATION=/usr/local/hadoop</programlisting>
 
@@ -45,7 +48,7 @@
                     named <emphasis
                     role="bluebold">mydataconnectors</emphasis> in the the
                     HPCC log directory (the HPCC log location can be set using
-                    Configuration Manager). </para>
+                    Configuration Manager).</para>
 
                     <para>The default location is:<programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting></para>
 
