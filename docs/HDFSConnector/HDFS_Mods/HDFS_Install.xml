@@ -70,17 +70,43 @@
 
       <listitem>
         <para>Edit the configuration file <emphasis
-        role="bluebold">/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</emphasis>.
-        </para>
+        role="bluebold">/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</emphasis>.</para>
 
-        <para>There are some configuration examples in the default
-        configuration file. One very important aspect of the configuration
-        file is the following line:</para>
+        <para>The configuration file is the key component. Make sure the value
+        of HADOOP_LOCATION is set to the location where Hadoop is installed.
+        There are some configuration examples in the default configuration
+        file.</para>
 
-        <programlisting>HADOOP_LOCATION=/usr/local/hadoop</programlisting>
+        <variablelist>
+          <varlistentry>
+            <term>Note:</term>
 
-        <para>Make sure the value is set to the location where Hadoop is
-        installed.</para>
+            <listitem>
+              <para>If there are run time errors, such as a library "can't be
+              found", check the config file carefully and be sure that the
+              environment files are all pointing to the correct loactions. The
+              path variables are usually set when Hadoop is installed,
+              therefore if you did not use a standard Hadoop installation
+              package, verify that all resources referenced in the config file
+              are valid. You may need to modify this file to be sure to point
+              to all the appropriate library resources if you have a
+              customized Hadoop installation. </para>
+
+              <para>The HDFS Connector writes log files to a folder named
+              <emphasis role="bluebold">mydataconnectors</emphasis> in the the
+              HPCC log directory (the HPCC log location can be set using
+              Configuration Manager).</para>
+
+              <para> The default location is:</para>
+
+              <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
+              log files are written following the following pattern:</para>
+
+              <para><programlisting>HDFSCONNECTOR.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting>
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
       </listitem>
 
       <listitem>
@@ -92,8 +118,6 @@
              /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</programlisting></para>
       </listitem>
     </orderedlist>
-
-    <para></para>
   </sect2>
 
   <sect2 role="brk">

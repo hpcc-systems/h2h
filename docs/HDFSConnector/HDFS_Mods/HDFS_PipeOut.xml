@@ -69,9 +69,10 @@
 
   <para><programlisting> /user/local/hadooop/<emphasis>HadoopFileName</emphasis>-parts/  </programlisting></para>
 
-  <para>You can then use other means to merge the file parts or you can use
-  <emphasis role="bold">HDFSConnector.PipeOutAndMerge</emphasis> to do both
-  tasks.</para>
+  <para>Where the <emphasis>HadoopFileName</emphasis> directory will take the
+  name specified. You can then use other means to merge the file parts or you
+  can use <emphasis role="bold">HDFSConnector.PipeOutAndMerge</emphasis> to do
+  both tasks.</para>
 
   <para>Examples:</para>
 
