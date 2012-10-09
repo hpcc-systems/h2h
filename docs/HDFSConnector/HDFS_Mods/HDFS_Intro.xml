@@ -34,11 +34,11 @@
                   <term>Note:</term>
 
                   <listitem>
-                    <para>It is important to note that to use the H2H
-                    Connector assumes that you installed Hadoop with a
-                    standard installation package, either Hadoop 1.x or better
-                    using the rpm or dpkg installs. If not there might be some
-                    additional configuration steps required.</para>
+                    <para>The H2H Connector assumes that you installed Hadoop
+                    with a standard installation package, either Hadoop 1.x or
+                    later using the rpm or deb installer. If you have
+                    installed Hadoop manually there may be some additional
+                    configuration required.</para>
                   </listitem>
                 </varlistentry>
               </variablelist>
