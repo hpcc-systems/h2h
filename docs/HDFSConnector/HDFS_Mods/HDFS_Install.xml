@@ -104,7 +104,8 @@
       </listitem>
 
       <listitem>
-        <para>Push the configuration file out to all nodes.</para>
+        <para>If you modify the default configuration file, you must copy the
+        configuration file to all nodes.</para>
       </listitem>
     </orderedlist>
   </sect2>
