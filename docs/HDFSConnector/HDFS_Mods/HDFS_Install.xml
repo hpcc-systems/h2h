@@ -104,12 +104,7 @@
       </listitem>
 
       <listitem>
-        <para>Push the configuration file to all nodes. You can use the
-        push.sh script:</para>
-
-        <para><programlisting>sudo -u hpcc /opt/HPCCSystems/sbin/hpcc-push.sh /
-             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf /
-             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</programlisting></para>
+        <para>Push the configuration file out to all nodes.</para>
       </listitem>
     </orderedlist>
   </sect2>
