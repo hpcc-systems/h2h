@@ -68,12 +68,6 @@
   the target HDFS system in file parts and merges them together to form a
   single target file on the HDFS system.</para>
 
-  <para>The <emphasis role="bold">HDFSConnector.PipeOutAndMerge</emphasis>
-  macro merges the newly created HDFS file parts and then removes the
-  temporary files. This behavior can be disabled using the –cleanmerge option.
-  In the macro definition find the –cleanmerge line and set value to 1 for
-  enabled or 0 disabled.</para>
-
   <para>Example:</para>
 
   <programlisting>#OPTION('pickBestEngine', 0);  

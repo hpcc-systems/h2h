@@ -72,7 +72,7 @@
         <para>Edit the configuration file <emphasis
         role="bluebold">:</emphasis></para>
 
-        <para><programlisting> /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</programlisting>The
+        <para><programlisting> /etc/HPCCSystems/hdfsconnector.conf</programlisting>The
         configuration file defines where Hadoop resources are located. Be sure
         these variables are all pointing to the correct locations. There are
         some configuration examples in the default configuration file.</para>
@@ -106,6 +106,13 @@
       <listitem>
         <para>If you modify the default configuration file, you must copy the
         configuration file to all nodes.</para>
+
+        <para>You can make this a little easier and use a script such as the
+        <emphasis>push.sh</emphasis> script:</para>
+
+        <para><programlisting>sudo -u hpcc /opt/HPCCSystems/sbin/hpcc-push.sh /
+             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf /
+             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</programlisting></para>
       </listitem>
     </orderedlist>
   </sect2>
