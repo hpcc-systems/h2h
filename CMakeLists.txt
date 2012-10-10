@@ -103,7 +103,7 @@ if (NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.1")
                 ## CPack instruction required for Debian
                 ###
                 message ("-- Packing BASH installation files")
-                set ( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_BINARY_DIR}/initfiles/bash/sbin/deb/postinst;${CMAKE_CURRENT_BINARY_DIR}/initfiles/sbin/prerm;${CMAKE_CURRENT_BINARY_DIR}/initfiles/bash/sbin/deb/postrm" )
+                set ( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_BINARY_DIR}/postinst;${CMAKE_CURRENT_BINARY_DIR}/prerm;${CMAKE_CURRENT_BINARY_DIR}/postrm" )
             endif ()
 
         elseif ( ${packageManagement} STREQUAL "RPM" )
@@ -113,11 +113,10 @@ if (NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.1")
             ###
             message("-- Will build RPM package")
             message ("-- Packing BASH installation files")
-            set ( CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/initfiles/bash/sbin/deb/postinst" )
-
-            set ( CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/initfiles/sbin/prerm" )
-            set ( CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/initfiles/bash/sbin/deb/postrm" )
-                else()
+            set ( CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postinst" )
+            set ( CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/prerm" )
+            set ( CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postrm" )
+        else()
             message("WARNING: Unsupported package ${packageManagement}.")
         endif ()
 
@@ -175,6 +174,7 @@ if ( NOT MAKE_DOCS_ONLY )
     find_package(LIBHDFS REQUIRED)
 
     configure_file("hdfsconnector.conf.in" "hdfsconnector.conf")
+    configure_file("postinst.in" "postinst")
     configure_file("hdfspipe.in" "hdfspipe" @ONLY )
 
     SET ( SRC hdfsconnector.cpp hdfsconnector.hpp)
@@ -193,7 +193,8 @@ if ( NOT MAKE_DOCS_ONLY )
     SET ( INSTALLDIR "${OSSDIR}/bin")
     Install ( TARGETS hdfsconnector DESTINATION ${INSTALLDIR} COMPONENT Runtime)
     Install ( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/hdfspipe DESTINATION ${INSTALLDIR} COMPONENT Runtime )
-    Install ( FILES ${CMAKE_CURRENT_BINARY_DIR}/hdfsconnector.conf DESTINATION ${HPCC_CONF_DIR} COMPONENT Runtime )
+    Install ( FILES ${CMAKE_CURRENT_BINARY_DIR}/hdfsconnector.conf DESTINATION ${HPCC_CONF_DIR}/rpmnew COMPONENT Runtime )
+    Install ( PROGRAMS h2h.install DESTINATION ${HPCC_ETC_DIR}/init.d/install COMPONENT Runtime )
 
     target_link_libraries ( hdfsconnector
                             ${JAVA_JVM_LIBRARY}
