@@ -107,12 +107,13 @@
         <para>If you modify the default configuration file, you must copy the
         configuration file to all nodes.</para>
 
-        <para>You can make this a little easier and use a script such as the
-        <emphasis>push.sh</emphasis> script:</para>
+        <para>You can use a script (such as the
+        <emphasis>hpcc-push.sh</emphasis> script) to make this a little
+        easier.</para>
 
         <para><programlisting>sudo -u hpcc /opt/HPCCSystems/sbin/hpcc-push.sh /
-             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf /
-             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</programlisting></para>
+            /etc/HPCCSystems/hdfsconnector.conf /
+            /etc/HPCCSystems/hdfsconnector.conf</programlisting></para>
       </listitem>
     </orderedlist>
   </sect2>
