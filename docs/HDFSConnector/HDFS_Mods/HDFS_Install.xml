@@ -82,10 +82,10 @@
             <term>Note:</term>
 
             <listitem>
-              <para>If there are run time errors, such as a "library can't be
-              found", check the configuration file carefully and be sure that
-              the environment variables there are all pointing to the correct
-              locations.</para>
+              <para>If you get a runtime error, such as "library can't be
+              found," check the library paths in your configurations file,
+              note the examples provided there and edit appropriately, if
+              needed. </para>
             </listitem>
           </varlistentry>
         </variablelist>

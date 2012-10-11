@@ -27,7 +27,7 @@
 
             <listitem>
               <para>The configuration file
-              (/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf)</para>
+              (/etc/HPCCSystems/hdfsconnector.conf)</para>
 
               <variablelist>
                 <varlistentry>
@@ -35,8 +35,8 @@
 
                   <listitem>
                     <para>The H2H Connector assumes that you installed Hadoop
-                    with a standard installation package, either Hadoop 1.x or
-                    later using the rpm or deb installer. If you have
+                    using a standard installation package, either Hadoop 1.x
+                    or later using the rpm or deb package. If you have
                     installed Hadoop manually there may be some additional
                     configuration required.</para>
                   </listitem>
@@ -54,8 +54,8 @@
           <listitem>
             <para>HDFSConnector.PipeIn</para>
 
-            <para>Imports data from Hadoop's file system (HDFS) to a Thor
-            Cluster.</para>
+            <para>Imports data from Hadoop's file system (HDFS) at an ECL
+            dataset.</para>
           </listitem>
 
           <listitem>
