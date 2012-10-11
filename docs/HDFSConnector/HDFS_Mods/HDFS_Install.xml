@@ -83,9 +83,9 @@
 
             <listitem>
               <para>If you get a runtime error, such as "library can't be
-              found," check the library paths in your configurations file,
-              note the examples provided there and edit appropriately, if
-              needed. </para>
+              found," check the library paths in your configurations file and
+              edit, if needed. The installed configuration file contains
+              samples to help you. </para>
             </listitem>
           </varlistentry>
         </variablelist>
