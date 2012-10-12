@@ -27,30 +27,18 @@
 
             <listitem>
               <para>The configuration file
-              (/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf)</para>
-
-              <para>The configuration file contains the location where Hadoop
-              is installed, as shown in the example below: </para>
-
-              <programlisting>HADOOP_LOCATION=/usr/local/hadoop</programlisting>
-
-              <para>This allows access to the libhdfs (API) library.</para>
+              (/etc/HPCCSystems/hdfsconnector.conf)</para>
 
               <variablelist>
                 <varlistentry>
                   <term>Note:</term>
 
                   <listitem>
-                    <para>The HDFS Connector writes log files to a folder
-                    named <emphasis
-                    role="bluebold">mydataconnectors</emphasis> in the the
-                    HPCC log directory (the HPCC log location can be set using
-                    Configuration Manager). </para>
-
-                    <para>The default location is:<programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting></para>
-
-                    <para>The log files are written following the following
-                    pattern:<programlisting>HDFSCONNECTOR.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
+                    <para>The H2H Connector assumes that you installed Hadoop
+                    using a standard installation package, either Hadoop 1.x
+                    or later using the rpm or deb package. If you have
+                    installed Hadoop manually there may be some additional
+                    configuration required.</para>
                   </listitem>
                 </varlistentry>
               </variablelist>
@@ -66,8 +54,8 @@
           <listitem>
             <para>HDFSConnector.PipeIn</para>
 
-            <para>Imports data from Hadoop's file system (HDFS) to a Thor
-            Cluster.</para>
+            <para>Imports data from Hadoop's file system (HDFS) at an ECL
+            dataset.</para>
           </listitem>
 
           <listitem>
