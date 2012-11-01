@@ -18,12 +18,12 @@
 #############################################
 
 #DO NOT CHANGE THIS FILE, CONFIGURATION CHANGES CAN BE DONE HERE:
-# @HPCC_CONF_DIR@/@HDFSCONN_CONF_FILE@
+# /etc/HPCCSystems/@HDFSCONN_CONF_FILE@
 
 source @HPCC_ETC_DIR@/init.d/hpcc_common
 set_environmentvars
 
-source @HPCC_CONF_DIR@/@HDFSCONN_CONF_FILE@
+source $configs/@HDFSCONN_CONF_FILE@
 
 CLASSPATH=$CLASSPATH:$HADOOP_CONF_DIR
 

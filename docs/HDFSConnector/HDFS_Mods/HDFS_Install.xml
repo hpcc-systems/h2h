@@ -70,33 +70,58 @@
 
       <listitem>
         <para>Edit the configuration file <emphasis
-        role="bluebold">/opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</emphasis>.</para>
+        role="bluebold">:</emphasis></para>
 
-        <para>The configuration file contains one line:</para>
+        <para><programlisting> /etc/HPCCSystems/hdfsconnector.conf</programlisting>The
+        configuration file defines where Hadoop resources are located. Be sure
+        these variables are all pointing to the correct locations. There are
+        some configuration examples in the default configuration file.</para>
 
-        <programlisting>HADOOP_LOCATION=/usr/local/hadoop</programlisting>
+        <variablelist>
+          <varlistentry>
+            <term>Note:</term>
 
-        <para>Make sure the value is set to the location where Hadoop is
-        installed.</para>
+            <listitem>
+              <para>If you get a runtime error, such as "library can't be
+              found," check the library paths in your configurations file and
+              edit, if needed. The installed configuration file contains
+              samples to help you.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+
+        <para>The HDFS Connector writes log files to a folder named <emphasis
+        role="bluebold">mydataconnectors</emphasis> in the the HPCC log
+        directory (the HPCC log location can be set using Configuration
+        Manager).</para>
+
+        <para>The default location is:</para>
+
+        <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
+        log files are written following the following pattern:</para>
+
+        <para><programlisting>HDFSCONNECTOR.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
       </listitem>
 
       <listitem>
-        <para>Push the configuration file to all nodes. You can use the
-        push.sh script:</para>
+        <para>If you modify the default configuration file, you must copy the
+        configuration file to all nodes.</para>
 
-        <para><programlisting>sudo -u hpcc /opt/HPCCSystems/sbin/hpcc-push.sh /
-             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf /
-             /opt/HPCCSystems/etc/HPCCSystems/hdfsconnector.conf</programlisting></para>
+        <para>You can use a script (such as the
+        <emphasis>hpcc-push.sh</emphasis> script) to make this a little
+        easier.</para>
+
+        <para><programlisting>sudo -u hpcc /opt/HPCCSystems/sbin/hpcc-push.sh \
+            /etc/HPCCSystems/hdfsconnector.conf \
+            /etc/HPCCSystems/hdfsconnector.conf</programlisting></para>
       </listitem>
     </orderedlist>
-
-    <para></para>
   </sect2>
 
   <sect2 role="brk">
     <title>Installing the ECL library to your ECL IDE source folder</title>
 
-    <para>The HDSF to HPCC Connector library is a single ECL file containing
+    <para>The HDFS to HPCC Connector library is a single ECL file containing
     three MACROs. These steps explain how to install to your ECL source
     repository.</para>
 

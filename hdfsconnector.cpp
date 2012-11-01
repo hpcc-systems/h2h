@@ -655,7 +655,7 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
             return RETURN_FAILURE;
         }
 
-        fprintf(stderr, "merging %d file(s) into %s", clustercount, filename);
+        fprintf(stderr, "merging %d file(s) into %s\n", clustercount, filename);
         fprintf(stderr, "Opening %s for writing!\n", filename);
 
         hdfsFile writeFile = hdfsOpenFile(fs, filename, O_CREAT | O_WRONLY, 0, filereplication, 0);
@@ -679,7 +679,7 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
 
             string filepartname;
 
-            createFilePartName(&filepartname, filename, nodeid, clustercount);
+            createFilePartName(&filepartname, filename, node, clustercount);
 
             if (hdfsExists(fs, filepartname.c_str()) == 0)
             {
@@ -745,15 +745,17 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
                 return EXIT_FAILURE;
             }
 
-            if (deleteparts)
-            {
-                filepartname.assign(filename);
-                filepartname.append("-parts");
-                hdfsDelete(fs, filepartname.c_str());
-            }
-
             fprintf(stderr, "Closing writefile %s\n", filename);
-            hdfsCloseFile(fs, writeFile);
+            if (hdfsCloseFile(fs, writeFile) != 0)
+                fprintf(stderr, "Could not close writefile %s\n", filename);
+        }
+
+        if (deleteparts)
+        {
+            string filecontainer;
+            filecontainer.assign(filename);
+            filecontainer.append("-parts");
+            hdfsDelete(fs, filecontainer.c_str());
         }
     }
     return EXIT_SUCCESS;
