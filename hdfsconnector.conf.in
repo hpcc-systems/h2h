@@ -15,7 +15,7 @@ HADOOP_SHARE_DIR=${HADOOP_STD_SHARE_PATH}
 #TARBALL_HADOOP_LOCATION = location of tarball hadoop instalation
 #If hadoop was not installed via deb/rpm install package
 #enable this var.
-#TARBALL_HADOOP_LOCATION=${TARBALLED_HADOOP_PATH}
+TARBALL_HADOOP_LOCATION=${TARBALLED_HADOOP_PATH}
 
 #H2H default libjvm location:
 # ${JAVA_JVM_LIBRARY}
