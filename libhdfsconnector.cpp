@@ -16,14 +16,14 @@
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  ############################################################################## */
 
-#include "hdfsconnector.hpp"
+#include "libhdfsconnector.hpp"
 
-hdfsFS Hdfs_Connector::getHdfsFS()
+hdfsFS libhdfsconnector::getHdfsFS()
 {
     return fs;
 }
 
-tOffset Hdfs_Connector::getBlockSize(const char * filename)
+tOffset libhdfsconnector::getBlockSize(const char * filename)
 {
     if (!fs)
     {
@@ -48,7 +48,7 @@ tOffset Hdfs_Connector::getBlockSize(const char * filename)
     return RETURN_FAILURE;
 }
 
-long Hdfs_Connector::getFileSize(const char * filename)
+long libhdfsconnector::getFileSize(const char * filename)
 {
     if (!fs)
     {
@@ -73,7 +73,7 @@ long Hdfs_Connector::getFileSize(const char * filename)
     return RETURN_FAILURE;
 }
 
-long Hdfs_Connector::getRecordCount(long fsize, int clustersize, int reclen, int nodeid)
+long libhdfsconnector::getRecordCount(long fsize, int clustersize, int reclen, int nodeid)
 {
     long readSize = fsize / reclen / clustersize;
     if (fsize % reclen)
@@ -89,7 +89,7 @@ long Hdfs_Connector::getRecordCount(long fsize, int clustersize, int reclen, int
     return readSize;
 }
 
-void Hdfs_Connector::ouputhosts(const char * rfile)
+void libhdfsconnector::ouputhosts(const char * rfile)
 {
     if (!fs)
     {
@@ -115,7 +115,7 @@ void Hdfs_Connector::ouputhosts(const char * rfile)
     }
 }
 
-void Hdfs_Connector::outputFileInfo(hdfsFileInfo * fileInfo)
+void libhdfsconnector::outputFileInfo(hdfsFileInfo * fileInfo)
 {
     printf("Name: %s, ", fileInfo->mName);
     printf("Type: %c, ", (char) (fileInfo->mKind));
@@ -128,7 +128,7 @@ void Hdfs_Connector::outputFileInfo(hdfsFileInfo * fileInfo)
     printf("Permissions: %d \n", fileInfo->mPermissions);
 }
 
-void Hdfs_Connector::getLastXMLElement(string * element, const char * xpath)
+void libhdfsconnector::getLastXMLElement(string * element, const char * xpath)
 {
     int lasttagclosechar = strlen(xpath) - 1;
     int lasttagopenchar = 0;
@@ -150,7 +150,7 @@ void Hdfs_Connector::getLastXMLElement(string * element, const char * xpath)
     element->append(xpath, lasttagopenchar + 1, lasttagclosechar - 1);
 }
 
-void Hdfs_Connector::getLastXPathElement(string * element, const char * xpath)
+void libhdfsconnector::getLastXPathElement(string * element, const char * xpath)
 {
     int lastdelimiter = strlen(xpath) - 1;
     while (lastdelimiter >= 0)
@@ -163,7 +163,7 @@ void Hdfs_Connector::getLastXPathElement(string * element, const char * xpath)
     element->append(xpath, lastdelimiter + 1, strlen(xpath) - lastdelimiter);
 }
 
-void Hdfs_Connector::getFirstXPathElement(string * element, const char * xpath)
+void libhdfsconnector::getFirstXPathElement(string * element, const char * xpath)
 {
     int len = strlen(xpath);
     for (int i = 0; i < len; i++)
@@ -174,7 +174,7 @@ void Hdfs_Connector::getFirstXPathElement(string * element, const char * xpath)
     }
 }
 
-void Hdfs_Connector::xpath2xml(string * xml, const char * xpath, bool open)
+void libhdfsconnector::xpath2xml(string * xml, const char * xpath, bool open)
 {
     vector<string> elements;
 
@@ -202,7 +202,7 @@ void Hdfs_Connector::xpath2xml(string * xml, const char * xpath, bool open)
     }
 }
 
-int Hdfs_Connector::readXMLOffset(const char * filename, unsigned long seekPos, unsigned long readlen,
+int libhdfsconnector::readXMLOffset(const char * filename, unsigned long seekPos, unsigned long readlen,
         const char * rowTag, const char * headerText, const char * footerText, unsigned long bufferSize)
 {
     string xmlizedxpath;
@@ -376,9 +376,9 @@ int Hdfs_Connector::readXMLOffset(const char * filename, unsigned long seekPos, 
     return EXIT_SUCCESS;
 }
 
-int Hdfs_Connector::readCSVOffset(const char * filename, unsigned long seekPos, unsigned long readlen,
+int libhdfsconnector::streamCSVFileOffset(const char * filename, unsigned long seekPos, unsigned long readlen,
         const char * eolseq, unsigned long bufferSize, bool outputTerminator, unsigned long recLen,
-        unsigned long maxLen, const char * quote)
+        unsigned long maxLen, const char * quote, int maxretries)
 {
     fprintf(stderr, "CSV terminator: \'%s\' and quote: \'%c\'\n", eolseq, quote[0]);
     unsigned long recsFound = 0;
@@ -559,8 +559,7 @@ int Hdfs_Connector::readCSVOffset(const char * filename, unsigned long seekPos, 
     return EXIT_SUCCESS;
 }
 
-int Hdfs_Connector::readFileOffset(const char * filename, tOffset seekPos, unsigned long readlen,
-        unsigned long bufferSize)
+int libhdfsconnector::streamFlatFileOffset(const char * filename, unsigned long seekPos, unsigned long readlen,unsigned long bufferSize, int maxretries)
 {
     hdfsFile readFile = hdfsOpenFile(fs, filename, O_RDONLY, 0, 0, 0);
     if (!readFile)
@@ -599,7 +598,7 @@ int Hdfs_Connector::readFileOffset(const char * filename, tOffset seekPos, unsig
     return EXIT_SUCCESS;
 }
 
-int Hdfs_Connector::streamInFile(const char * rfile, int bufferSize)
+int libhdfsconnector::streamInFile(const char * rfile, int bufferSize)
 {
     if (!fs)
     {
@@ -644,10 +643,66 @@ int Hdfs_Connector::streamInFile(const char * rfile, int bufferSize)
     return 0;
 }
 
-int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned clustercount, unsigned bufferSize,
-        unsigned flushthreshold, short filereplication, bool deleteparts)
+int libhdfsconnector::streamFileOffset()
 {
-    if (nodeid == 0)
+    int returnCode = RETURN_FAILURE;
+
+    fprintf(stderr, "\nStreaming in %s...\n", fileName);
+
+    unsigned long fileSize = getFileSize(fileName);
+    if (fileSize != RETURN_FAILURE)
+    {
+        if (strcmp(format.c_str(), "FLAT") == 0)
+        {
+            unsigned long recstoread = getRecordCount(fileSize, clusterCount, recLen, nodeID);
+
+            if (recstoread != RETURN_FAILURE)
+            {
+                unsigned long offset = nodeID * (fileSize / clusterCount / recLen) * recLen;
+
+                if ((fileSize / recLen) % clusterCount > 0)
+                {
+                    if ((fileSize / recLen) % clusterCount > nodeID)
+                        offset += nodeID * recLen;
+                    else
+                        offset += ((fileSize / recLen) % clusterCount) * recLen;
+                }
+
+                fprintf(stderr, "fileSize: %lu offset: %lu size bytes: %lu, recstoread:%lu\n", fileSize, offset,
+                        recstoread * recLen, recstoread);
+                if (offset < fileSize)
+                    returnCode = streamFlatFileOffset(fileName, offset, recstoread * recLen, bufferSize, 1);
+            }
+        }
+        else if (strcmp(format.c_str(), "CSV") == 0)
+        {
+            fprintf(stderr, "Filesize: %ld, Offset: %ld, readlen: %ld\n", fileSize,
+                    (fileSize / clusterCount) * nodeID, fileSize / clusterCount);
+
+            returnCode = streamCSVFileOffset(fileName, (fileSize / clusterCount) * nodeID,
+                    fileSize / clusterCount, terminator.c_str(), bufferSize, outputTerminator, recLen, maxLen,
+                    quote.c_str(), 1);
+        }
+        else if (strcmp(format.c_str(), "XML") == 0)
+        {
+            fprintf(stderr, "Filesize: %ld, Offset: %ld, readlen: %ld\n", fileSize,
+                    (fileSize / clusterCount) * nodeID, fileSize / clusterCount);
+
+            returnCode = readXMLOffset(fileName, (fileSize / clusterCount) * nodeID,
+                    fileSize / clusterCount, rowTag, headerText, footerText, bufferSize);
+        }
+        else
+            fprintf(stderr, "Unknown format type: %s(%s)", format.c_str(), foptions.c_str());
+    }
+    else
+        fprintf(stderr, "Could not determine HDFS file size: %s", fileName);
+
+    return returnCode;
+}
+
+int libhdfsconnector::mergeFile()
+{
+    if (nodeID == 0)
     {
         if (!fs)
         {
@@ -655,31 +710,31 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
             return RETURN_FAILURE;
         }
 
-        fprintf(stderr, "merging %d file(s) into %s\n", clustercount, filename);
-        fprintf(stderr, "Opening %s for writing!\n", filename);
+        fprintf(stderr, "merging %d file(s) into %s\n", clusterCount, fileName);
+        fprintf(stderr, "Opening %s for writing!\n", fileName);
 
-        hdfsFile writeFile = hdfsOpenFile(fs, filename, O_CREAT | O_WRONLY, 0, filereplication, 0);
+        hdfsFile writeFile = hdfsOpenFile(fs, fileName, O_CREAT | O_WRONLY, 0, filereplication, 0);
 
         if (!writeFile)
         {
-            fprintf(stderr, "Failed to open %s for writing!\n", filename);
+            fprintf(stderr, "Failed to open %s for writing!\n", fileName);
             return EXIT_FAILURE;
         }
 
         tSize totalBytesWritten = 0;
-        for (unsigned node = 0; node < clustercount; node++)
+        for (unsigned node = 0; node < clusterCount; node++)
         {
             if (node > 0)
             {
-                writeFile = hdfsOpenFile(fs, filename, O_WRONLY | O_APPEND, 0, filereplication, 0);
-                fprintf(stderr, "Re-opening %s for append!\n", filename);
+                writeFile = hdfsOpenFile(fs, fileName, O_WRONLY | O_APPEND, 0, filereplication, 0);
+                fprintf(stderr, "Re-opening %s for append!\n", fileName);
             }
 
             unsigned bytesWrittenSinceLastFlush = 0;
 
             string filepartname;
 
-            createFilePartName(&filepartname, filename, node, clustercount);
+            createFilePartName(&filepartname, fileName, node, clusterCount);
 
             if (hdfsExists(fs, filepartname.c_str()) == 0)
             {
@@ -688,7 +743,7 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
                 hdfsFile readFile = hdfsOpenFile(fs, filepartname.c_str(), O_RDONLY, 0, 0, 0);
                 if (!readFile)
                 {
-                    fprintf(stderr, "Failed to open %s for reading!\n", filename);
+                    fprintf(stderr, "Failed to open %s for reading!\n", fileName);
                     return EXIT_FAILURE;
                 }
 
@@ -708,11 +763,11 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
                         totalBytesWritten += bytesWritten;
                         bytesWrittenSinceLastFlush += bytesWritten;
 
-                        if (bytesWrittenSinceLastFlush >= flushthreshold)
+                        if (bytesWrittenSinceLastFlush >= flushThreshold)
                         {
                             if (hdfsFlush(fs, writeFile))
                             {
-                                fprintf(stderr, "Failed to 'flush' %s\n", filename);
+                                fprintf(stderr, "Failed to 'flush' %s\n", fileName);
                                 return EXIT_FAILURE;
                             }
                             bytesWrittenSinceLastFlush = 0;
@@ -727,14 +782,14 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
 
                 if (hdfsFlush(fs, writeFile))
                 {
-                    fprintf(stderr, "Failed to 'flush' %s\n", filename);
+                    fprintf(stderr, "Failed to 'flush' %s\n", fileName);
                     return EXIT_FAILURE;
                 }
 
                 fprintf(stderr, "Closing readfile  %s\n", filepartname.c_str());
                 hdfsCloseFile(fs, readFile);
 
-                if (deleteparts)
+                if (cleanmerge)
                 {
                     hdfsDelete(fs, filepartname.c_str());
                 }
@@ -745,15 +800,15 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
                 return EXIT_FAILURE;
             }
 
-            fprintf(stderr, "Closing writefile %s\n", filename);
+            fprintf(stderr, "Closing writefile %s\n", fileName);
             if (hdfsCloseFile(fs, writeFile) != 0)
-                fprintf(stderr, "Could not close writefile %s\n", filename);
+                fprintf(stderr, "Could not close writefile %s\n", fileName);
         }
 
-        if (deleteparts)
+        if (cleanmerge)
         {
             string filecontainer;
-            filecontainer.assign(filename);
+            filecontainer.assign(fileName);
             filecontainer.append("-parts");
             hdfsDelete(fs, filecontainer.c_str());
         }
@@ -761,8 +816,7 @@ int Hdfs_Connector::mergeFile(const char * filename, unsigned nodeid, unsigned c
     return EXIT_SUCCESS;
 }
 
-int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsigned clustercount,
-        const char * fileorpipename)
+int libhdfsconnector::writeFlatOffset()
 {
     if (!fs)
     {
@@ -772,7 +826,7 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
 
     string filepartname;
 
-    createFilePartName(&filepartname, filename, nodeid, clustercount);
+    createFilePartName(&filepartname, fileName, nodeID, clusterCount);
 
     hdfsFile writeFile = hdfsOpenFile(fs, filepartname.c_str(), O_CREAT | O_WRONLY, 0, 1, 0);
 
@@ -784,10 +838,10 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
 
     fprintf(stderr, "Opened HDFS file %s for writing successfully...\n", filepartname.c_str());
 
-    fprintf(stderr, "Opening pipe:  %s \n", fileorpipename);
+    fprintf(stderr, "Opening pipe:  %s \n", pipepath);
 
     ifstream in;
-    in.open(fileorpipename, ios::in | ios::binary);
+    in.open(pipepath, ios::in | ios::binary);
 
     char char_ptr[124 * 100]; //TODO: this should be configurable.
                                 // should it be bigger/smaller?
@@ -833,333 +887,58 @@ int Hdfs_Connector::writeFlatOffset(const char * filename, unsigned nodeid, unsi
     return EXIT_SUCCESS;
 }
 
-void Hdfs_Connector::escapedStringToChars(const char * source, string & escaped)
+bool libhdfsconnector::connect ()
 {
-    int si = 0;
+    fs = NULL;
+    if (strlen(hdfsuser) > 0)
+        fs = hdfsConnectAsUser(hadoopHost, hadoopPort, hdfsuser);
+    else
+        fs = hdfsConnect(hadoopHost, hadoopPort);
 
-    while (source[si])
+    if (!fs)
     {
-        if (source[si] == '\\')
-        {
-            switch (source[++si])
-            {
-            case 'n':
-                escaped.append(1, '\n');
-                break;
-            case 'r':
-                escaped.append(1, '\r');
-                break;
-            case 't':
-                escaped.append(1, '\t');
-                break;
-            case 'b':
-                escaped.append(1, '\b');
-                break;
-            case 'v':
-                escaped.append(1, '\v');
-                break;
-            case 'f':
-                escaped.append(1, '\f');
-                break;
-            case '\\':
-                escaped.append(1, '\\');
-                break;
-            case '\'':
-//fprintf(stderr, "adding escaped single quote..");
-                escaped.append(1, '\'');
-                break;
-            case '\"':
-                escaped.append(1, '\"');
-                break;
-            case '0':
-                escaped.append(1, '\0');
-                break;
-//			case 'c':
-//				escaped.append(1,'\c');
-//				break;
-            case 'a':
-                escaped.append(1, '\a');
-                break;
-//			case 's':
-//				escaped.append(1,'\s');
-//				break;
-            case 'e':
-                escaped.append(1, '\e');
-                break;
-            default:
-                break;
-
-            }
-        }
-        else
-            escaped.append(1, source[si]);
-
-        si++;
+        fprintf(stderr, "Error: Could not connect to hdfs via LIBHDFS on %s:%d\n", hadoopHost, hadoopPort);
+        return false;
     }
-}
+    return true;
+};
 
-int main(int argc, char **argv)
+int libhdfsconnector::execute ()
 {
-    Hdfs_Connector * connector = NULL;
-
-    unsigned int bufferSize = 1024 * 100;
-    unsigned int flushThreshold = bufferSize * 10;
     int returnCode = EXIT_FAILURE;
-    unsigned clusterCount = 0;
-    unsigned nodeID = 0;
-    unsigned long recLen = 0;
-    unsigned long maxLen = 0;
-    const char * fileName = "";
-    const char * hadoopHost = "default";
-    int hadoopPort = 0;
-    string format("");
-    string foptions("");
-    string data("");
 
-    int currParam = 1;
-
-    const char * wuid = "";
-    const char * rowTag = "Row";
-    const char * separator = "";
-    string terminator(EOL);
-    bool outputTerminator = true;
-    string quote("'");
-    const char * headerText = "<Dataset>";
-    const char * footerText = "</Dataset>";
-    const char * hdfsuser = "";
-    const char * hdfsgroup = "";
-    const char * pipepath = "";
-    bool cleanmerge = false;
-    short filereplication = 1;
-
-    enum HadoopPluginAction
+    if (action == HCA_STREAMIN)
     {
-        HPA_INVALID = -1,
-        HPA_STREAMIN = 0,
-        HPA_STREAMOUT = 1,
-        HPA_STREAMOUTPIPE = 2,
-        HPA_READOUT = 3,
-        HPA_MERGEFILE = 4
-    };
-
-    HadoopPluginAction action = HPA_INVALID;
-
-    while (currParam < argc)
-    {
-        if (strcmp(argv[currParam], "-si") == 0)
-        {
-            action = HPA_STREAMIN;
-        }
-        else if (strcmp(argv[currParam], "-so") == 0)
-        {
-            action = HPA_STREAMOUT;
-        }
-        else if (strcmp(argv[currParam], "-sop") == 0)
-        {
-            action = HPA_STREAMOUTPIPE;
-        }
-        else if (strcmp(argv[currParam], "-mf") == 0)
-        {
-            action = HPA_MERGEFILE;
-        }
-        else if (strcmp(argv[currParam], "-clustercount") == 0)
-        {
-            clusterCount = atoi(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-nodeid") == 0)
-        {
-            nodeID = atoi(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-reclen") == 0)
-        {
-            recLen = atol(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-format") == 0)
-        {
-            const char * tmp = argv[++currParam];
-            while (*tmp && *tmp != '(')
-                format.append(1, *tmp++);
-            fprintf(stderr, "Format: %s", format.c_str());
-            if (*tmp++)
-                while (*tmp && *tmp != ')')
-                    foptions.append(1, *tmp++);
-        }
-        else if (strcmp(argv[currParam], "-rowtag") == 0)
-        {
-            rowTag = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-filename") == 0)
-        {
-            fileName = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-host") == 0)
-        {
-            hadoopHost = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-port") == 0)
-        {
-            hadoopPort = atoi(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-wuid") == 0)
-        {
-            wuid = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-data") == 0)
-        {
-            data.append(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-separator") == 0)
-        {
-            separator = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-terminator") == 0)
-        {
-            terminator.clear();
-            connector->escapedStringToChars(argv[++currParam], terminator);
-        }
-        else if (strcmp(argv[currParam], "-quote") == 0)
-        {
-            quote.clear();
-            connector->escapedStringToChars(argv[++currParam], quote);
-        }
-        else if (strcmp(argv[currParam], "-headertext") == 0)
-        {
-            headerText = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-footertext") == 0)
-        {
-            footerText = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-buffsize") == 0)
-        {
-            bufferSize = atol(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-outputterminator") == 0)
-        {
-            outputTerminator = atoi(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-maxlen") == 0)
-        {
-            maxLen = atol(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-hdfsuser") == 0)
-        {
-            hdfsuser = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-hdfsgroup") == 0)
-        {
-            hdfsgroup = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-pipepath") == 0)
-        {
-            pipepath = argv[++currParam];
-        }
-        else if (strcmp(argv[currParam], "-flushsize") == 0)
-        {
-            flushThreshold = atol(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-cleanmerge") == 0)
-        {
-            cleanmerge = atoi(argv[++currParam]);
-        }
-        else if (strcmp(argv[currParam], "-hdfsfilereplication") == 0)
-        {
-            filereplication = atoi(argv[++currParam]);
-        }
-        else
-        {
-            fprintf(stderr, "Error: Found invalid input param: %s \n", argv[currParam]);
-            return returnCode;
-        }
-        currParam++;
+       returnCode = streamFileOffset();
     }
-
-    connector = new Hdfs_Connector(hadoopHost, hadoopPort, hdfsuser);
-
-    hdfsFS fs = connector->getHdfsFS();
-
-    if (fs)
+    else if (action == HCA_STREAMOUT || action == HCA_STREAMOUTPIPE)
     {
-        if (action == HPA_STREAMIN)
-        {
-            fprintf(stderr, "\nStreaming in %s...\n", fileName);
-
-            unsigned long fileSize = connector->getFileSize(fileName);
-            if (fileSize != RETURN_FAILURE)
-            {
-                if (strcmp(format.c_str(), "FLAT") == 0)
-                {
-                    unsigned long recstoread = connector->getRecordCount(fileSize, clusterCount, recLen, nodeID);
-                    if (recstoread == RETURN_FAILURE)
-                    {
-                        if (fs)
-                            hdfsDisconnect(fs);
-
-                        return EXIT_FAILURE;
-                    }
-
-                    unsigned long offset = nodeID * (fileSize / clusterCount / recLen) * recLen;
-                    if ((fileSize / recLen) % clusterCount > 0)
-                    {
-                        if ((fileSize / recLen) % clusterCount > nodeID)
-                            offset += nodeID * recLen;
-                        else
-                            offset += ((fileSize / recLen) % clusterCount) * recLen;
-                    }
-
-                    fprintf(stderr, "fileSize: %lu offset: %lu size bytes: %lu, recstoread:%lu\n", fileSize, offset,
-                            recstoread * recLen, recstoread);
-                    if (offset < fileSize)
-                        returnCode = connector->readFileOffset(fileName, offset, recstoread * recLen, bufferSize);
-                }
-                else if (strcmp(format.c_str(), "CSV") == 0)
-                {
-                    fprintf(stderr, "Filesize: %ld, Offset: %ld, readlen: %ld\n", fileSize,
-                            (fileSize / clusterCount) * nodeID, fileSize / clusterCount);
-
-                    returnCode = connector->readCSVOffset(fileName, (fileSize / clusterCount) * nodeID,
-                            fileSize / clusterCount, terminator.c_str(), bufferSize, outputTerminator, recLen, maxLen,
-                            quote.c_str());
-                }
-                else if (strcmp(format.c_str(), "XML") == 0)
-                {
-                    fprintf(stderr, "Filesize: %ld, Offset: %ld, readlen: %ld\n", fileSize,
-                            (fileSize / clusterCount) * nodeID, fileSize / clusterCount);
-
-                    returnCode = connector->readXMLOffset(fileName, (fileSize / clusterCount) * nodeID,
-                            fileSize / clusterCount, rowTag, headerText, footerText, bufferSize);
-                }
-                else
-                    fprintf(stderr, "Unknown format type: %s(%s)", format.c_str(), foptions.c_str());
-            }
-            else
-                fprintf(stderr, "Could not determine HDFS file size: %s", fileName);
-        }
-        else if (action == HPA_STREAMOUT)
-        {
-            returnCode = connector->writeFlatOffset(fileName, nodeID, clusterCount, pipepath);
-        }
-        else if (action == HPA_STREAMOUTPIPE)
-        {
-            returnCode = connector->writeFlatOffset(fileName, nodeID, clusterCount, pipepath);
-        }
-        else if (action == HPA_MERGEFILE)
-        {
-            returnCode = connector->mergeFile(fileName, nodeID, clusterCount, bufferSize, flushThreshold,
-                    filereplication, cleanmerge);
-        }
-        else
-        {
-            fprintf(stderr, "\nNo action type detected, exiting.");
-            returnCode = EXIT_FAILURE;
-        }
-
-        if (connector)
-            delete (connector);
+        returnCode = writeFlatOffset();
+    }
+    else if (action == HCA_MERGEFILE)
+    {
+        returnCode = mergeFile();
     }
     else
     {
-        fprintf(stderr, "Could not connect to HDFS on %s:%d\n", hadoopHost, hadoopPort);
+        fprintf(stderr, "\nNo action type detected, exiting.");
     }
+    return returnCode;
+};
+
+int main(int argc, char **argv)
+{
+    int returnCode = EXIT_FAILURE;
+
+    libhdfsconnector * connector = new libhdfsconnector(argc, argv);
+
+    if (connector->connect())
+    {
+        returnCode = connector->execute();
+    }
+
+    if (connector)
+        delete (connector);
+
     return returnCode;
 }

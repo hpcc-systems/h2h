@@ -14,16 +14,23 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+SET ( PRODUCT_PREFIX "hpccsystems" )
 
-project (hpccsystems-hdfsconnector)
-cmake_minimum_required (VERSION 2.6)
+option(BUILD_WEBHDFS_VER "Build WebHDFS version of HDFSConnector." ON)
+
+IF( BUILD_WEBHDFS_VER )
+    SET (HDFS_CONNECTOR_TYPE "webhdfsconnector")
+ELSE()
+    SET (HDFS_CONNECTOR_TYPE "libhdfsconnector")
+ENDIF()
+
+PROJECT (${PRODUCT_PREFIX}-${HDFS_CONNECTOR_TYPE})
 
 SET ( HPCC_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE (${HPCC_SOURCE_DIR}/version.cmake)
 
 SET ( CMAKE_MODULE_PATH "${HPCC_SOURCE_DIR}/cmake_modules")
-#SET ( EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin" )
-SET ( PRODUCT_PREFIX "hpccsystems" )
 
 INCLUDE(${CMAKE_MODULE_PATH}/optionDefaults.cmake)
 INCLUDE(${CMAKE_MODULE_PATH}/commonSetup.cmake)
@@ -37,21 +44,21 @@ SET ( CPACK_SOURCE_GENERATOR TGZ )
 SET ( CPACK_RPM_PACKAGE_VERSION "${projname}")
 SET ( CPACK_RPM_PACKAGE_RELEASE "${version}${stagever}")
 
-if ( ${ARCH64BIT} EQUAL 1 )
-    set ( CPACK_RPM_PACKAGE_ARCHITECTURE "x86_64")
-else( ${ARCH64BIT} EQUAL 1 )
-    set ( CPACK_RPM_PACKAGE_ARCHITECTURE "i386")
-endif ( ${ARCH64BIT} EQUAL 1 )
+IF ( ${ARCH64BIT} EQUAL 1 )
+    SET ( CPACK_RPM_PACKAGE_ARCHITECTURE "x86_64")
+ELSE( ${ARCH64BIT} EQUAL 1 )
+    SET ( CPACK_RPM_PACKAGE_ARCHITECTURE "i386")
+ENDIF ( ${ARCH64BIT} EQUAL 1 )
 
 SET ( CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CPACK_RPM_PACKAGE_ARCHITECTURE}")
 
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-    set(CPACK_STRIP_FILES TRUE)
-endif()
+IF ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+    SET (CPACK_STRIP_FILES TRUE)
+ENDIF()
 
 SET ( CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};hdfsconnector;ALL;/")
 
-if ( CMAKE_SYSTEM MATCHES Linux )
+IF ( CMAKE_SYSTEM MATCHES Linux )
     EXECUTE_PROCESS (
                 COMMAND ${CMAKE_MODULE_PATH}/distrocheck.sh
                     OUTPUT_VARIABLE packageManagement
@@ -68,22 +75,22 @@ if ( CMAKE_SYSTEM MATCHES Linux )
                         ERROR_VARIABLE  packageRevision
                 )
 
-    message ( "-- Auto Detecting Packaging type")
-    message ( "-- distro uses ${packageManagement}, revision is ${packageRevisionArch}" )
+    MESSAGE ( "-- Auto Detecting Packaging type")
+    MESSAGE ( "-- distro uses ${packageManagement}, revision is ${packageRevisionArch}" )
 
-    if ( ${packageManagement} STREQUAL "DEB" )
-        set(CPACK_PACKAGE_FILE_NAME     "${CMAKE_PROJECT_NAME}-${version}-${stagever}${packageRevisionArch}")
-    elseif ( ${packageManagement} STREQUAL "RPM" )
-        set(CPACK_PACKAGE_FILE_NAME     "${CMAKE_PROJECT_NAME}-${version}-${stagever}.${packageRevisionArch}")
-    else()
-        set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${version}-${stagever}${CPACK_SYSTEM_NAME}")
-    endif ()
+    IF ( ${packageManagement} STREQUAL "DEB" )
+        SET(CPACK_PACKAGE_FILE_NAME     "${CMAKE_PROJECT_NAME}-${version}-${stagever}${packageRevisionArch}")
+    ELSEIF ( ${packageManagement} STREQUAL "RPM" )
+        SET(CPACK_PACKAGE_FILE_NAME     "${CMAKE_PROJECT_NAME}-${version}-${stagever}.${packageRevisionArch}")
+    ELSE()
+        SET(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}_${version}-${stagever}${CPACK_SYSTEM_NAME}")
+    ENDIF ()
 
-endif ( CMAKE_SYSTEM MATCHES Linux )
+ENDIF ( CMAKE_SYSTEM MATCHES Linux )
 
 MESSAGE ("-- Current release version is ${CPACK_PACKAGE_FILE_NAME}")
 
-set( CPACK_SOURCE_GENERATOR TGZ )
+SET ( CPACK_SOURCE_GENERATOR TGZ )
 
 ###
 ## CPack commands in this section require cpack 2.8.1 to function.
@@ -91,116 +98,124 @@ set( CPACK_SOURCE_GENERATOR TGZ )
 ## an RPM.
 ###
 
-if (NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.1")
-    if ( CMAKE_SYSTEM MATCHES Linux )
-        if ( ${packageManagement} STREQUAL "DEB" )
-            if ("${CMAKE_VERSION}" VERSION_EQUAL "2.8.2")
-                message("WARNING: CMAKE 2.8.2  would not build DEB package")
-            else ()
-                set ( CPACK_GENERATOR "${packageManagement}" )
-                message("-- Will build DEB package")
+IF (NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.1")
+    IF ( CMAKE_SYSTEM MATCHES Linux )
+        IF ( ${packageManagement} STREQUAL "DEB" )
+            IF ("${CMAKE_VERSION}" VERSION_EQUAL "2.8.2")
+                MESSAGE("WARNING: CMAKE 2.8.2  would not build DEB package")
+            ELSE ()
+                SET ( CPACK_GENERATOR "${packageManagement}" )
+                MESSAGE("-- Will build DEB package")
                 ###
                 ## CPack instruction required for Debian
                 ###
-                message ("-- Packing BASH installation files")
-                set ( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_BINARY_DIR}/postinst;${CMAKE_CURRENT_BINARY_DIR}/prerm;${CMAKE_CURRENT_BINARY_DIR}/postrm" )
-            endif ()
+                MESSAGE ("-- Packing BASH installation files")
+                SET ( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_BINARY_DIR}/postinst;${CMAKE_CURRENT_BINARY_DIR}/prerm;${CMAKE_CURRENT_BINARY_DIR}/postrm" )
+            ENDIF ()
 
-        elseif ( ${packageManagement} STREQUAL "RPM" )
-            set ( CPACK_GENERATOR "${packageManagement}" )
+        ELSEIF ( ${packageManagement} STREQUAL "RPM" )
+            SET ( CPACK_GENERATOR "${packageManagement}" )
             ###
             ## CPack instruction required for RPM
             ###
-            message("-- Will build RPM package")
-            message ("-- Packing BASH installation files")
-            set ( CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postinst" )
-            set ( CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/prerm" )
-            set ( CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postrm" )
-        else()
-            message("WARNING: Unsupported package ${packageManagement}.")
-        endif ()
+            MESSAGE("-- Will build RPM package")
+            MESSAGE ("-- Packing BASH installation files")
+            SET ( CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postinst" )
+            SET ( CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/prerm" )
+            SET ( CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "${CMAKE_CURRENT_BINARY_DIR}/postrm" )
+        ELSE()
+            MESSAGE("WARNING: Unsupported package ${packageManagement}.")
+        ENDIF ()
 
-    endif ( CMAKE_SYSTEM MATCHES Linux )
-    if ( EXISTS ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
-        include( ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
-    else()
-        message("-- WARNING: DEPENDENCY FILE FOR ${packageRevision} NOT FOUND, Using deps template.")
-        include( ${CMAKE_MODULE_PATH}/dependencies/template.cmake )
-    endif()
-else()
-    message("WARNING: CMAKE 2.8.1 or later required to create RPMs from this project")
-endif()
+    ENDIF ( CMAKE_SYSTEM MATCHES Linux )
+    IF ( EXISTS ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
+        INCLUDE( ${CMAKE_MODULE_PATH}/dependencies/${packageRevision}.cmake )
+    ELSE()
+        MESSAGE("-- WARNING: DEPENDENCY FILE FOR ${packageRevision} NOT FOUND, Using deps template.")
+        INCLUDE( ${CMAKE_MODULE_PATH}/dependencies/template.cmake )
+    ENDIF()
+ELSE()
+    MESSAGE("WARNING: CMAKE 2.8.1 or later required to create RPMs from this project")
+ENDIF()
 
-if ( NOT MAKE_DOCS_ONLY )
-
-    add_subdirectory (ecl)
-
-    #IF TARBALLED_HADOOP_PATH IS NOT PASSED IN, DEFAULT TO /usr/local/hadoop
-    #AT BUILD TIME THIS PATH WILL BE USED TO SEARCH FOR:
-    # ${TARBALLED_HADOOP_PATH}/src/c++/libhdfs/hdfs.h
-    # ${TARBALLED_HADOOP_PATH}/c++/${osdir}/libhdfs.so
-
-    #AT RUN TIME THIS PATH WILL BE USED TO SEARCH FOR:
-    # ${TARBALLED_HADOOP_PATH}/conf
-    # ${TARBALLED_HADOOP_PATH}/*.jar
-    # ${TARBALLED_HADOOP_PATH}/lib/*.jar
-
-    #####################################################
-    # hadoop install packages layout files in this manner:
-    # conf files  -> /etc/hadoop
-    # *.jar files -> /usr/share/hadoop & /usr/share/hadoop/lib
-    # hdfslib     -> /usr/lib or /usr/lib64
-    #####################################################
-
-    option(TARBALLED_HADOOP_PATH "Set the Hadoop path.")
-    if( NOT TARBALLED_HADOOP_PATH )
-        SET (TARBALLED_HADOOP_PATH "/usr/local/hadoop")
-    endif()
-
-    #set other paths
-    #generate config for script.
-    #add script processor for vars.
+IF ( NOT MAKE_DOCS_ONLY )
+    ADD_SUBDIRECTORY (ecl)
 
     SET ( HPCC_ETC_DIR "${CMAKE_INSTALL_PREFIX}/${OSSDIR}/etc")
     SET ( HPCC_CONF_DIR "${CMAKE_INSTALL_PREFIX}/${OSSDIR}${CONFIG_DIR}")
     SET ( HDFSCONN_CONF_FILE "hdfsconnector.conf" )
-    SET ( HDFSCONN_EXE_NAME "hdfsconnector" )
-    SET ( HDFSCONN_EXE_PATH "${EXEC_PATH}/${HDFSCONN_EXE_NAME}")
-
-    SET ( HADOOP_STD_CONF_PATH "/etc/hadoop" )
-    SET ( HADOOP_STD_SHARE_PATH "/usr/share/hadoop" )
-
-    find_package(JNI REQUIRED)
-    find_package(LIBHDFS REQUIRED)
-
-    configure_file("hdfsconnector.conf.in" "hdfsconnector.conf")
-    configure_file("postinst.in" "postinst")
-    configure_file("hdfspipe.in" "hdfspipe" @ONLY )
-
-    SET ( SRC hdfsconnector.cpp hdfsconnector.hpp)
-
-    include_directories (
-                          ${CMAKE_BINARY_DIR}
-                          ${CMAKE_BINARY_DIR}/oss
-                          ${JNI_INCLUDE_DIRS}
-                          ${JAVA_INCLUDE_PATH}
-                          ${JAVA_INCLUDE_PATH2}
-                          ${LIBHDFS_INCLUDE_DIR}  
-                         )
-
-    HPCC_ADD_EXECUTABLE( ${HDFSCONN_EXE_NAME} ${SRC} )
-
     SET ( INSTALLDIR "${OSSDIR}/bin")
-    Install ( TARGETS hdfsconnector DESTINATION ${INSTALLDIR} COMPONENT Runtime)
-    Install ( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/hdfspipe DESTINATION ${INSTALLDIR} COMPONENT Runtime )
-    Install ( FILES ${CMAKE_CURRENT_BINARY_DIR}/hdfsconnector.conf DESTINATION ${HPCC_CONF_DIR}/rpmnew COMPONENT Runtime )
-    Install ( PROGRAMS h2h.install DESTINATION ${HPCC_ETC_DIR}/init.d/install COMPONENT Runtime )
 
-    target_link_libraries ( hdfsconnector
-                            ${JAVA_JVM_LIBRARY}
-                            ${LIBHDFS_LIBRARIES}
-                          )
+    MESSAGE ("-- Building ${HDFS_CONNECTOR_TYPE} --")
+    IF ( BUILD_WEBHDFS_VER )
+        SET ( HDFSCONN_EXE_NAME ${HDFS_CONNECTOR_TYPE} )
+        SET ( HDFSCONN_EXE_PATH "${EXEC_PATH}/${HDFSCONN_EXE_NAME}")
+
+        FIND_PACKAGE(CURL REQUIRED)
+
+        SET ( SRC hdfsconnector.hpp webhdfsconnector.cpp webhdfsconnector.hpp)
+
+        INCLUDE_DIRECTORIES ( ${CMAKE_BINARY_DIR} ${CURL_INCLUDE_DIR} )
+        HPCC_ADD_EXECUTABLE( ${HDFSCONN_EXE_NAME} ${SRC} )
+
+        INSTALL ( TARGETS ${HDFSCONN_EXE_NAME} DESTINATION ${INSTALLDIR} COMPONENT Runtime)
+
+        MESSAGE("-- LIBHDFDSCONNECTOR link libs:")
+        MESSAGE("--     ${HDFSCONN_EXE_NAME}")
+        MESSAGE("--      ${CURL_LIBRARY}")
+
+        TARGET_LINK_LIBRARIES ( ${HDFSCONN_EXE_NAME} ${CURL_LIBRARY} )
+
+    ELSE ()
+        SET ( HDFSCONN_EXE_NAME ${HDFS_CONNECTOR_TYPE} )
+        SET ( HDFSCONN_EXE_PATH "${EXEC_PATH}/${HDFSCONN_EXE_NAME}")
+
+        SET ( HADOOP_STD_CONF_PATH "/etc/hadoop" )
+        SET ( HADOOP_STD_SHARE_PATH "/usr/share/hadoop" )
+
+        OPTION(TARBALLED_HADOOP_PATH "Set the Hadoop path.")
+        IF( NOT TARBALLED_HADOOP_PATH )
+            SET (TARBALLED_HADOOP_PATH "/usr/local/hadoop")
+        ENDIF()
+
+        FIND_PACKAGE(JNI REQUIRED)
+        FIND_PACKAGE(LIBHDFS REQUIRED)
+
+        SET ( SRC hdfsconnector.hpp libhdfsconnector.cpp libhdfsconnector.hpp)
+
+        INCLUDE_DIRECTORIES (
+                      ${CMAKE_BINARY_DIR}
+                      ${CMAKE_BINARY_DIR}/oss
+                      ${JNI_INCLUDE_DIRS}
+                      ${JAVA_INCLUDE_PATH}
+                      ${JAVA_INCLUDE_PATH2}
+                      ${LIBHDFS_INCLUDE_DIR}
+                     )
+
+        HPCC_ADD_EXECUTABLE( ${HDFSCONN_EXE_NAME} ${SRC} )
+
+        INSTALL ( TARGETS ${HDFSCONN_EXE_NAME} DESTINATION ${INSTALLDIR} COMPONENT Runtime)
+
+        MESSAGE("-- LIBHDFDSCONNECTOR link libs:")
+        MESSAGE("--     ${JAVA_JVM_LIBRARY}")
+        MESSAGE("--     ${LIBHDFS_LIBRARIES}")
+        MESSAGE("--     ${HDFSCONN_EXE_NAME}")
+
+        TARGET_LINK_LIBRARIES ( ${HDFSCONN_EXE_NAME}
+                                ${JAVA_JVM_LIBRARY}
+                                ${LIBHDFS_LIBRARIES}
+                              )
+    ENDIF()
+
+    CONFIGURE_FILE("${HPCC_SOURCE_DIR}/hdfsconnector.conf.in" "hdfsconnector.conf")
+    CONFIGURE_FILE("${HPCC_SOURCE_DIR}/postinst.in" "postinst")
+    CONFIGURE_FILE("${HPCC_SOURCE_DIR}/hdfspipe.in" "${CMAKE_CURRENT_BINARY_DIR}/hdfspipe" @ONLY )
+
+    INSTALL ( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/hdfspipe DESTINATION ${INSTALLDIR} COMPONENT Runtime )
+    INSTALL ( FILES ${CMAKE_CURRENT_BINARY_DIR}/hdfsconnector.conf DESTINATION ${HPCC_CONF_DIR}/rpmnew COMPONENT Runtime )
+    INSTALL ( PROGRAMS ${HPCC_SOURCE_DIR}/h2h.install DESTINATION ${HPCC_ETC_DIR}/init.d/install COMPONENT Runtime )
 
     INCLUDE(CPack)
-endif()
-add_subdirectory(docs)
+ENDIF()
+
+ADD_SUBDIRECTORY(docs)

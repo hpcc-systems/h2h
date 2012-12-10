@@ -17,8 +17,8 @@
 #    along with All rights reserved. This program is free software: you can redistribute program.  If not, see <http://www.gnu.org/licenses/>.
 #############################################
 
-#DO NOT CHANGE THIS FILE, CONFIGURATION CHANGES CAN BE DONE HERE:
-# /etc/HPCCSystems/@HDFSCONN_CONF_FILE@
+#DO NOT MODIFY THIS FILE!
+#CONFIGURATION CHANGES CAN BE DONE HERE: /etc/HPCCSystems/@HDFSCONN_CONF_FILE@
 
 source @HPCC_ETC_DIR@/init.d/hpcc_common
 set_environmentvars
@@ -27,6 +27,9 @@ source $configs/@HDFSCONN_CONF_FILE@
 
 CLASSPATH=$CLASSPATH:$HADOOP_CONF_DIR
 
+###################################################
+# CLASSPATH set up for libhdfs
+###################################################
 for f in $HADOOP_SHARE_DIR/*.jar ; do
     CLASSPATH=$CLASSPATH:$f
 done
@@ -69,7 +72,7 @@ done;
 #the log variable is read from the HPCC Platform config
 LOGS_LOCATION=$log
 HDFSCONNLOGLOC=$LOGS_LOCATION/mydataconnectors
-LOG=$HDFSCONNLOGLOC/HDFSCONNECTOR.$nodeid.$PID.log
+LOG=$HDFSCONNLOGLOC/@HDFS_CONNECTOR_TYPE@.$nodeid.$PID.log
 PIPERRLOG=$HDFSCONNLOGLOC/HPCC-FIFO.err.$PID
 
 if [ -e $HDFSCONNLOGLOC ]
@@ -88,18 +91,20 @@ echo "nodeid: $nodeid" 		>> $LOG
 h2hpid=0;
 h2hstatus=0;
 
+TARGETCONNECTORNAME="@HDFSCONN_EXE_NAME@";
+
 if [ "$1" = "" ];
 then
-	echo "Running without input params" >> $LOG
-	exit 1;
+    echo "Error: No input params detected!" >> $LOG
+    exit 1;
 elif [ $1 = "-mf" ];
 then
-    @HDFSCONN_EXE_PATH@ ${@}      2>> $LOG;
+    $TARGETCONNECTORNAME ${@}      2>> $LOG;
     h2hstatus=$?;
     h2hpid=$!;
 elif [ $1 = "-si" ];
 then
-    @HDFSCONN_EXE_PATH@  ${@}      2>> $LOG;
+    $TARGETCONNECTORNAME  ${@}      2>> $LOG;
     h2hstatus=$?
     h2hpid=$!;
 elif [ $1 = "-so" ];
@@ -120,7 +125,7 @@ then
 
     echo "calling hdfsconnector..."         >> $LOG
 
-    @HDFSCONN_EXE_PATH@ ${@} -pipepath $HPCCTMPFILE  	2>> $LOG
+    $TARGETCONNECTORNAME ${@} -pipepath $HPCCTMPFILE  	2>> $LOG
     h2hpid=$!;
     h2hstatus=$?;
 elif [ $1 = "-sop" ];
@@ -138,7 +143,7 @@ then
         echo "  WARNING (hdfsconnector mkfifo) error registered in file: $PIPERRLOG " >> $LOG
         exit 1
     fi
-    @HDFSCONN_EXE_PATH@  ${@} -pipepath $pipepath	2>> $LOG &
+    $TARGETCONNECTORNAME  ${@} -pipepath $pipepath	2>> $LOG &
 
     h2hpid=$!;
 
@@ -164,6 +169,6 @@ else
     h2hstatus=1;
 fi
 
-echo "H2H exited with: ${h2hstatus}"            >> $LOG
+echo "$TARGETCONNECTORNAME exited with: ${h2hstatus}"            >> $LOG
 
 exit ${h2hstatus};
