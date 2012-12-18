@@ -107,6 +107,7 @@ private:
     bool hasusername;
     bool webhdfsreached;
     CURL *curl;
+    const static short s_libcurlmaxredirs = 50;
 
     HdfsFileStatus targetfilestatus;
 
