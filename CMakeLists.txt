@@ -146,6 +146,14 @@ IF ( NOT MAKE_DOCS_ONLY )
     SET ( HDFSCONN_CONF_FILE "hdfsconnector.conf" )
     SET ( INSTALLDIR "${OSSDIR}/bin")
 
+    SET ( HADOOP_STD_CONF_PATH "/etc/hadoop" )
+    SET ( HADOOP_STD_SHARE_PATH "/usr/share/hadoop" )
+
+    OPTION(TARBALLED_HADOOP_PATH "Set the Hadoop path.")
+    IF( NOT TARBALLED_HADOOP_PATH )
+        SET (TARBALLED_HADOOP_PATH "/usr/local/hadoop")
+    ENDIF()
+
     MESSAGE ("-- Building ${HDFS_CONNECTOR_TYPE} --")
     IF ( BUILD_WEBHDFS_VER )
         SET ( HDFSCONN_EXE_NAME ${HDFS_CONNECTOR_TYPE} )
@@ -169,14 +177,6 @@ IF ( NOT MAKE_DOCS_ONLY )
     ELSE ()
         SET ( HDFSCONN_EXE_NAME ${HDFS_CONNECTOR_TYPE} )
         SET ( HDFSCONN_EXE_PATH "${EXEC_PATH}/${HDFSCONN_EXE_NAME}")
-
-        SET ( HADOOP_STD_CONF_PATH "/etc/hadoop" )
-        SET ( HADOOP_STD_SHARE_PATH "/usr/share/hadoop" )
-
-        OPTION(TARBALLED_HADOOP_PATH "Set the Hadoop path.")
-        IF( NOT TARBALLED_HADOOP_PATH )
-            SET (TARBALLED_HADOOP_PATH "/usr/local/hadoop")
-        ENDIF()
 
         FIND_PACKAGE(JNI REQUIRED)
         FIND_PACKAGE(LIBHDFS REQUIRED)
