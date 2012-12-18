@@ -195,8 +195,8 @@ int webhdfsconnector::streamFlatFileOffset(unsigned long seekPos, unsigned long 
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
         curl_easy_setopt(curl, CURLOPT_VERBOSE, true);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
-        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50); //Default as reported by libcurl
-                                                       //curl.haxx.se/docs/mapage.html#--max-redirs
+        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, s_libcurlmaxredirs); //Default as reported by libcurl
+                                                       //curl.haxx.se/docs/manpage.html#--max-redirs
                                                        //however the default seems to be 0 in
                                                        //at least one platform (CentOS), therefore
                                                        //Explicitly setting default to 50.
@@ -259,11 +259,11 @@ int webhdfsconnector::streamCSVFileOffset(unsigned long seekPos,
     curl_easy_reset(curl);
 
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
-    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50); //Default as reported by libcurl
-                                                           //curl.haxx.se/docs/mapage.html#--max-redirs
-                                                           //however the default seems to be 0 in
-                                                           //at least one platform (CentOS), therefore
-                                                           //Explicitly setting default to 50.
+    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, s_libcurlmaxredirs); //Default as reported by libcurl
+                                                   //curl.haxx.se/docs/manpage.html#--max-redirs
+                                                   //however the default seems to be 0 in
+                                                   //at least one platform (CentOS), therefore
+                                                   //Explicitly setting default to 50.
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToStrCallBackCurl);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &bufferstr);
 
@@ -517,8 +517,8 @@ unsigned long webhdfsconnector::appendBufferOffset(long blocksize, short replica
     curl_easy_setopt(curl, CURLOPT_VERBOSE, false);
 
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
-    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50); //Default as reported by libcurl
-                                                   //curl.haxx.se/docs/mapage.html#--max-redirs
+    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, s_libcurlmaxredirs); //Default as reported by libcurl
+                                                   //curl.haxx.se/docs/manpage.html#--max-redirs
                                                    //however the default seems to be 0 in
                                                    //at least one platform (CentOS), therefore
                                                    //Explicitly setting default to 50.
