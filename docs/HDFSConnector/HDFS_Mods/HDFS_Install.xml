@@ -127,7 +127,11 @@
 
     <para><orderedlist>
         <listitem>
-          <para>Download the .ZIP file from the portal.</para>
+          <para>Download the <emphasis role="bold">HDFS Connector Library for
+          IDE (ZIP)</emphasis> file from the HPCC web portal: <ulink
+          url="http://hpccsystems.com/products-and-services/products/modules/hadoop-integration">http://hpccsystems.com/products-and-services/products/modules/hadoop-integration</ulink></para>
+
+          <para> </para>
         </listitem>
 
         <listitem>
@@ -140,7 +144,7 @@
           Files</emphasis>.</para>
 
           <para>To locate your source folder, refer to your ECL IDE
-          preference, located at <emphasis role="bold">Preferences &gt;&gt;
+          preferences, located at <emphasis role="bold">Preferences &gt;&gt;
           Compiler &gt;&gt; ECL Folders</emphasis>.</para>
 
           <para>When you are finished, the library will be in a repository

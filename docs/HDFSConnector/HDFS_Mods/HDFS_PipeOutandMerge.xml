@@ -37,7 +37,9 @@
           <row>
             <entry><emphasis>HadoopFileFormat</emphasis></entry>
 
-            <entry>The Hadoop data file format : FLAT | CSV</entry>
+            <entry>The Hadoop data file format : FLAT | CSV [( [, SEPARATOR(
+            f_delimiters ) ][, TERMINATOR( r_delimiters ) ][, QUOTE(
+            characters ) ] )].</entry>
           </row>
 
           <row>
