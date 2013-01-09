@@ -4,6 +4,18 @@
 <sect1 id="InstallHDFS" role="brk">
   <title>Installation and Configuration</title>
 
+  <para>There are two distinct variations now available each one has a
+  separate installation package. Before installing you should consider which
+  variation is more appropriate for you. The two variations available are the
+  Libhdfs, and the Webhdfs. The Libhdfs requires a libhdfs.so as well as a
+  local installation of Hadoop. The benefit of having local resources is that
+  processing is localized and performance reflects that. The Webdfs variation
+  does not require a local installation of Hadoop, and therefore uses less
+  local resources. Webhdfs requires Libcurl, it also requires Webhdfs be
+  enables on target HDFS system, and that the target HDFS datanode hostnames
+  be locally resolvable. PipeOutAndMerge is not supported in the Webhdfs
+  variation as well. </para>
+
   <sect2 role="nobrk">
     <title role="nobrk">Installing the Server-side components</title>
 
@@ -131,7 +143,7 @@
           IDE (ZIP)</emphasis> file from the HPCC web portal: <ulink
           url="http://hpccsystems.com/products-and-services/products/modules/hadoop-integration">http://hpccsystems.com/products-and-services/products/modules/hadoop-integration</ulink></para>
 
-          <para> </para>
+          <para></para>
         </listitem>
 
         <listitem>
