@@ -4,10 +4,14 @@
 <sect1 id="IntroHDFS" role="nobrk">
   <title>Introduction</title>
 
-  <para>The HDFS to HPCC Connector provides a means to import data from
-  Hadoop's HDFS into an HPCC Systems Thor platform. It also supports exporting
-  the data back to HDFS or exporting and merging it. This allows you to use an
-  HPCC cluster in conjunction with your Hadoop-based cluster.</para>
+  <para>The HDFS to HPCC Connector (H2H Connector) provides a means to import
+  data from Hadoop's HDFS into an HPCC Systems platform. It also supports
+  exporting the data back to HDFS or exporting and merging it. This allows you
+  to use an HPCC cluster in conjunction with your Hadoop-based cluster.</para>
+
+  <para>There are two varieties of the H2H Connector, one based on <emphasis
+  role="bold">libhdfs</emphasis> and one based on <emphasis
+  role="bold">webhdfs</emphasis>.</para>
 
   <para>The H2H Connector is an add-on to an HPCC Cluster and consists of
   server-side components and ECL Macros that invoke them.</para>
@@ -17,8 +21,8 @@
         <para><emphasis role="bold">Server-side
         components:</emphasis><itemizedlist>
             <listitem>
-              <para>The executable ( /opt/HPCCSystems/bin/hdfsconnector
-              )</para>
+              <para>The executable ( /opt/HPCCSystems/bin/libhdfsconnector or
+              /opt/HPCCSystems/bin/webhdfsconnector )</para>
             </listitem>
 
             <listitem>
@@ -28,20 +32,6 @@
             <listitem>
               <para>The configuration file
               (/etc/HPCCSystems/hdfsconnector.conf)</para>
-
-              <variablelist>
-                <varlistentry>
-                  <term>Note:</term>
-
-                  <listitem>
-                    <para>The H2H Connector assumes that you installed Hadoop
-                    using a standard installation package, either Hadoop 1.x
-                    or later using the rpm or deb package. If you have
-                    installed Hadoop manually there may be some additional
-                    configuration required.</para>
-                  </listitem>
-                </varlistentry>
-              </variablelist>
             </listitem>
           </itemizedlist></para>
       </listitem>
@@ -70,12 +60,88 @@
 
             <para>Exports data from a Thor Cluster to Hadoop's file system
             (HDFS) and merges the data.</para>
+
+            <para>Not supported when using a webhdfs implementation.</para>
           </listitem>
         </itemizedlist>
       </listitem>
 
       <listitem>
-        <para>The HDFS to HPCC Connector User's Guide</para>
+        <para><emphasis role="bold">The HDFS to HPCC Connector User's
+        Guide</emphasis></para>
       </listitem>
     </itemizedlist></para>
+
+  <sect2 role="brk">
+    <title>Implementation Varieties</title>
+
+    <para>There are two implementations of the H2H connector available, one
+    based on <emphasis role="bold">libhdfs</emphasis> and one based on
+    <emphasis role="bold">webhdfs</emphasis>. Each one has a separate
+    installation package. Before installing you should consider which
+    variation is more appropriate for you.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>Note:</term>
+
+        <listitem>
+          <para>The libhdfs variety of the H2H Connector assumes that you
+          installed Hadoop using a standard installation package, either
+          Hadoop 1.x or later using the rpm or deb package. If you have
+          installed Hadoop manually there may be some additional configuration
+          required.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para><emphasis role="bold">Comparison Table</emphasis></para>
+
+    <para><informaltable>
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry align="center">libhdfs</entry>
+
+              <entry align="center">webhdfs</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>Utilizes native HDFS API</entry>
+
+              <entry>Does not need local installation of Hadoop nor
+              JVM</entry>
+            </row>
+
+            <row>
+              <entry>Requires local installation of Hadoop</entry>
+
+              <entry>Requires webhdfs be enabled on target HDFS system</entry>
+            </row>
+
+            <row>
+              <entry>Local JVM required</entry>
+
+              <entry>Target HDFS datanode hostnames must resolve
+              locally</entry>
+            </row>
+
+            <row>
+              <entry>libhdfs.so required</entry>
+
+              <entry>PipeOutAndMerge is not supported, user responsible for
+              merging file parts on Hadoop</entry>
+            </row>
+
+            <row>
+              <entry></entry>
+
+              <entry>libcurl required</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable></para>
+  </sect2>
 </sect1>

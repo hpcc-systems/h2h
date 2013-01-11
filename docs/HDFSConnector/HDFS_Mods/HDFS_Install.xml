@@ -4,37 +4,23 @@
 <sect1 id="InstallHDFS" role="brk">
   <title>Installation and Configuration</title>
 
-  <para>There are two distinct variations now available each one has a
-  separate installation package. Before installing you should consider which
-  variation is more appropriate for you. The two variations available are the
-  Libhdfs, and the Webhdfs. The Libhdfs requires a libhdfs.so as well as a
-  local installation of Hadoop. The benefit of having local resources is that
-  processing is localized and performance reflects that. The Webdfs variation
-  does not require a local installation of Hadoop, and therefore uses less
-  local resources. Webhdfs requires Libcurl, it also requires Webhdfs be
-  enables on target HDFS system, and that the target HDFS datanode hostnames
-  be locally resolvable. PipeOutAndMerge is not supported in the Webhdfs
-  variation as well. </para>
-
   <sect2 role="nobrk">
     <title role="nobrk">Installing the Server-side components</title>
 
     <para>The installation and package that you download is different
     depending on the operating system you plan to use.</para>
 
-    <orderedlist>
+    <para>Download the appropriate package for your operating system.</para>
+
+    <para>You must install the package on every HPCC node.</para>
+
+    <para>To install the package, follow the installation instructions for
+    your operating system:</para>
+
+    <para><emphasis role="bold">Centos/Red Hat/SuSe</emphasis></para>
+
+    <itemizedlist>
       <listitem>
-        <para>Download the appropriate package for your operating
-        system.</para>
-      </listitem>
-
-      <listitem>
-        <para>You must install the package on every HPCC Thor node. To install
-        the package, follow the installation instructions for your operating
-        system:</para>
-
-        <para><emphasis role="bold">Centos/Red Hat/SuSe</emphasis></para>
-
         <para>Install RPM with the -Uvh switch.</para>
 
         <para>This is the upgrade command and will perform an automatic
@@ -54,26 +40,31 @@
 
               <programlisting>sudo passwd hpcc</programlisting>
 
-              <para>Be sure to set the password on ALL nodes</para>
+              <para>Be sure to set the password on ALL nodes.</para>
             </listitem>
           </varlistentry>
         </variablelist>
+      </listitem>
+    </itemizedlist>
 
-        <para><emphasis role="bold">Ubuntu/Debian </emphasis></para>
+    <para><emphasis role="bold">Ubuntu/Debian </emphasis></para>
 
-        <para>For Ubuntu installations a Debian package is provided. To
-        install the package, use:</para>
+    <para>For Ubuntu installations a Debian package (dpkg) is provided.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>To install the package, use:</para>
 
         <programlisting>sudo dpkg -i &lt;deb filename&gt;</programlisting>
       </listitem>
-    </orderedlist>
+    </itemizedlist>
   </sect2>
 
   <sect2>
     <title>Editing and distributing the Configuration file</title>
 
-    <para>After you install the HDFS to HPCC Connector package, you must edit
-    the configuration file and push it out to all nodes.</para>
+    <para>Once you install the H2H Connector package, if you edit the
+    configuration file, you must then push it out to all nodes.</para>
 
     <orderedlist>
       <listitem>
@@ -112,7 +103,11 @@
         <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
         log files are written following the following pattern:</para>
 
-        <para><programlisting>HDFSCONNECTOR.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
+        <para><programlisting>libhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
+
+        <para>Or if you chose the webhdfs implementation:</para>
+
+        <para><programlisting>webhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
       </listitem>
 
       <listitem>
@@ -131,11 +126,12 @@
   </sect2>
 
   <sect2 role="brk">
-    <title>Installing the ECL library to your ECL IDE source folder</title>
+    <title>Installing the H2H ECL library to your ECL IDE source
+    folder</title>
 
-    <para>The HDFS to HPCC Connector library is a single ECL file containing
-    three MACROs. These steps explain how to install to your ECL source
-    repository.</para>
+    <para>The HDFS to HPCC Connector (H2H) library is a single ECL file
+    containing three MACROs. These steps explain how to install to your ECL
+    source repository.</para>
 
     <para><orderedlist>
         <listitem>
@@ -161,8 +157,9 @@
 
           <para>When you are finished, the library will be in a repository
           folder named <emphasis role="bluebold">DataConnectors</emphasis>. It
-          will contain one file named
-          <emphasis>HDFSConnector.ecl</emphasis>.</para>
+          will contain one file named <emphasis>HDFSConnector.ecl</emphasis>,
+          which contains the ECL Macros used to interface with the H2H
+          Connector.</para>
         </listitem>
       </orderedlist></para>
   </sect2>
