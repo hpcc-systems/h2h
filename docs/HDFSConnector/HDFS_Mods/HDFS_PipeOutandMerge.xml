@@ -37,7 +37,22 @@
           <row>
             <entry><emphasis>HadoopFileFormat</emphasis></entry>
 
-            <entry>The Hadoop data file format : FLAT | CSV</entry>
+            <entry>The Hadoop data file format : FLAT |
+            CSV[csvoptions]</entry>
+          </row>
+
+          <row>
+            <entry><emphasis>csvoptions</emphasis></entry>
+
+            <entry align="left">[[,]SEPARATOR( f_delimiters ) ]
+            [[,]TERMINATOR( r_delimiters ) ] [[,]QUOTE( characters ) ]</entry>
+          </row>
+
+          <row>
+            <entry><emphasis> </emphasis></entry>
+
+            <entry align="left">default values for SEPARATOR: ',' TERMINATOR:
+            '\n' QUOTE: '''</entry>
           </row>
 
           <row>
@@ -67,6 +82,17 @@
   </emphasis>macro writes the given <emphasis>ECL_RS</emphasis> recordset to
   the target HDFS system in file parts and merges them together to form a
   single target file on the HDFS system.</para>
+
+  <para><variablelist>
+      <varlistentry>
+        <term>NOTE:</term>
+
+        <listitem>
+          <para>PipeOutAndMerge is NOT supported in the webhdfs implementation
+          of HDFS Connector.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist></para>
 
   <para>Example:</para>
 

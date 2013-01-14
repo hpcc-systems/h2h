@@ -10,19 +10,17 @@
     <para>The installation and package that you download is different
     depending on the operating system you plan to use.</para>
 
-    <orderedlist>
+    <para>Download the appropriate package for your operating system.</para>
+
+    <para>You must install the package on every HPCC node.</para>
+
+    <para>To install the package, follow the installation instructions for
+    your operating system:</para>
+
+    <para><emphasis role="bold">Centos/Red Hat/SuSe</emphasis></para>
+
+    <itemizedlist>
       <listitem>
-        <para>Download the appropriate package for your operating
-        system.</para>
-      </listitem>
-
-      <listitem>
-        <para>You must install the package on every HPCC Thor node. To install
-        the package, follow the installation instructions for your operating
-        system:</para>
-
-        <para><emphasis role="bold">Centos/Red Hat/SuSe</emphasis></para>
-
         <para>Install RPM with the -Uvh switch.</para>
 
         <para>This is the upgrade command and will perform an automatic
@@ -42,26 +40,31 @@
 
               <programlisting>sudo passwd hpcc</programlisting>
 
-              <para>Be sure to set the password on ALL nodes</para>
+              <para>Be sure to set the password on ALL nodes.</para>
             </listitem>
           </varlistentry>
         </variablelist>
+      </listitem>
+    </itemizedlist>
 
-        <para><emphasis role="bold">Ubuntu/Debian </emphasis></para>
+    <para><emphasis role="bold">Ubuntu/Debian </emphasis></para>
 
-        <para>For Ubuntu installations a Debian package is provided. To
-        install the package, use:</para>
+    <para>For Ubuntu installations a Debian package (dpkg) is provided.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>To install the package, use:</para>
 
         <programlisting>sudo dpkg -i &lt;deb filename&gt;</programlisting>
       </listitem>
-    </orderedlist>
+    </itemizedlist>
   </sect2>
 
   <sect2>
     <title>Editing and distributing the Configuration file</title>
 
-    <para>After you install the HDFS to HPCC Connector package, you must edit
-    the configuration file and push it out to all nodes.</para>
+    <para>Once you install the H2H Connector package, if you edit the
+    configuration file, you must then push it out to all nodes.</para>
 
     <orderedlist>
       <listitem>
@@ -100,7 +103,11 @@
         <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
         log files are written following the following pattern:</para>
 
-        <para><programlisting>HDFSCONNECTOR.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
+        <para><programlisting>libhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
+
+        <para>Or if you chose the webhdfs implementation:</para>
+
+        <para><programlisting>webhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
       </listitem>
 
       <listitem>
@@ -119,15 +126,20 @@
   </sect2>
 
   <sect2 role="brk">
-    <title>Installing the ECL library to your ECL IDE source folder</title>
+    <title>Installing the H2H ECL library to your ECL IDE source
+    folder</title>
 
-    <para>The HDFS to HPCC Connector library is a single ECL file containing
-    three MACROs. These steps explain how to install to your ECL source
-    repository.</para>
+    <para>The HDFS to HPCC Connector (H2H) library is a single ECL file
+    containing three MACROs. These steps explain how to install to your ECL
+    source repository.</para>
 
     <para><orderedlist>
         <listitem>
-          <para>Download the .ZIP file from the portal.</para>
+          <para>Download the <emphasis role="bold">HDFS Connector Library for
+          IDE (ZIP)</emphasis> file from the HPCC web portal: <ulink
+          url="http://hpccsystems.com/products-and-services/products/modules/hadoop-integration">http://hpccsystems.com/products-and-services/products/modules/hadoop-integration</ulink></para>
+
+          <para></para>
         </listitem>
 
         <listitem>
@@ -140,13 +152,14 @@
           Files</emphasis>.</para>
 
           <para>To locate your source folder, refer to your ECL IDE
-          preference, located at <emphasis role="bold">Preferences &gt;&gt;
+          preferences, located at <emphasis role="bold">Preferences &gt;&gt;
           Compiler &gt;&gt; ECL Folders</emphasis>.</para>
 
           <para>When you are finished, the library will be in a repository
           folder named <emphasis role="bluebold">DataConnectors</emphasis>. It
-          will contain one file named
-          <emphasis>HDFSConnector.ecl</emphasis>.</para>
+          will contain one file named <emphasis>HDFSConnector.ecl</emphasis>,
+          which contains the ECL Macros used to interface with the H2H
+          Connector.</para>
         </listitem>
       </orderedlist></para>
   </sect2>

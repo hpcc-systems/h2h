@@ -36,7 +36,22 @@
           <row>
             <entry><emphasis>HadoopFileFormat</emphasis></entry>
 
-            <entry>The Hadoop data file format : FLAT | CSV.</entry>
+            <entry>The Hadoop data file format : FLAT |
+            CSV[csvoptions]</entry>
+          </row>
+
+          <row>
+            <entry><emphasis>csvoptions</emphasis></entry>
+
+            <entry align="left">[[,]SEPARATOR( f_delimiters ) ]
+            [[,]TERMINATOR( r_delimiters ) ] [[,]QUOTE( characters ) ]</entry>
+          </row>
+
+          <row>
+            <entry><emphasis> </emphasis></entry>
+
+            <entry align="left"> default values for SEPARATOR: ',' TERMINATOR:
+            '\n' QUOTE: ''' </entry>
           </row>
 
           <row>

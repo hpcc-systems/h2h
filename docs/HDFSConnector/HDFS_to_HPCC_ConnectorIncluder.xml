@@ -56,14 +56,17 @@
     <xi:include href="HDFSConnector/HDFS_Mods/HDFS_Intro.xml"
                 xpointer="element(/1)"
                 xmlns:xi="http://www.w3.org/2001/XInclude" />
-    
+
     <xi:include href="HDFSConnector/HDFS_Mods/HDFS_Install.xml"
                 xpointer="element(/1)"
-                xmlns:xi="http://www.w3.org/2001/XInclude" />                
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
   </chapter>
 
   <chapter>
     <title>ECL Macros</title>
+
+    <para>The ECL Macros are provided as an Application Programming Interface
+    (API) to the HDFS Connector. </para>
 
     <xi:include href="HDFSConnector/HDFS_Mods/HDFS_PipeIn.xml"
                 xpointer="element(/1)"
