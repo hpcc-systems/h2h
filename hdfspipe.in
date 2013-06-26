@@ -54,39 +54,43 @@ export CLASSPATH=$CLASSPATH
 
 PID=$$
 
-idfound=0;
 nodeid=0;
-
-for p in $*;
+wuid=0;
+for ((paramindex=1; paramindex <= $#; paramindex++ ));
  do
-   if [ "$idfound" = "1" ];
+   if [ "${!paramindex}" = "-wuid" ];
    then
-        nodeid=$p;
-        idfound=0;
-   elif [ "$p" = "-nodeid" ];
+        ((paramindex++));
+        wuid=${!paramindex};
+        echo "found wuid: $wuid";
+   elif [ "${!paramindex}" = "-nodeid" ];
    then
-	idfound=1;
+        ((paramindex++));
+        nodeid=${!paramindex};
+        echo "found nodeid: $nodeid";
    fi
 done;
 
 #the log variable is read from the HPCC Platform config
 LOGS_LOCATION=$log
 HDFSCONNLOGLOC=$LOGS_LOCATION/mydataconnectors
-LOG=$HDFSCONNLOGLOC/@HDFS_CONNECTOR_TYPE@.$nodeid.$PID.log
+LOG=$HDFSCONNLOGLOC/@HDFS_CONNECTOR_TYPE@.$nodeid.$PID.$wuid.log
 PIPERRLOG=$HDFSCONNLOGLOC/HPCC-FIFO.err.$PID
 
 if [ -e $HDFSCONNLOGLOC ]
   then
-    echo "log file found"	>> $LOG
+    echo "log file found"           >> $LOG
   else
     mkdir $HDFSCONNLOGLOC
 fi
 username=`id -nu`
-echo "Script starting"		>> $LOG
-echo "Running as user: $username"   >> $LOG
-echo 'Incoming params: '          >> $LOG
+echo "Script starting"               >> $LOG
+echo "PID: $PID"                     >> $LOG
+echo "User: $username"               >> $LOG
+echo 'Incoming params: '             >> $LOG
 echo $(printf '%q ' ${@})            >> $LOG
-echo "nodeid: $nodeid" 		>> $LOG
+echo "NodeId: $nodeid"               >> $LOG
+echo "WUID: $wuid"                   >> $LOG
 
 h2hpid=0;
 h2hstatus=0;
@@ -109,7 +113,7 @@ then
     h2hpid=$!;
 elif [ $1 = "-so" ];
 then
-    HPCCTMPFILE=/tmp/HPCCTMPFILE_$nodeid;
+    HPCCTMPFILE=/tmp/HPCCTMPFILE-$nodeid-$PID-$wuid;
     if [ -f $HPCCTMPFILE ]
     then
         rm "$HPCCTMPFILE" 			2>> $LOG
@@ -130,7 +134,7 @@ then
     h2hstatus=$?;
 elif [ $1 = "-sop" ];
 then
-    pipepath=/tmp/HPCCPIPE_$nodeid;
+    pipepath=/tmp/HPCCPIPE-$nodeid-$PID-$wuid;
     mkfifo $pipepath 2> $PIPERRLOG;
     chmod 777 $pipepath 2> $PIPERRLOG;
 
