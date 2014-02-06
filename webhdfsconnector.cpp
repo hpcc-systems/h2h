@@ -49,7 +49,7 @@ int webhdfsconnector::reachWebHDFS()
     if (res == CURLE_OK)
         retval = EXIT_SUCCESS;
     else
-        fprintf(stderr, "Could not reach WebHDFS\n");
+        fprintf(stderr, "Could not reach WebHDFS. Error code: %d\n", res);
 
     return retval;
 }
@@ -111,7 +111,6 @@ int webhdfsconnector::getFileStatus(const char * fileurl, HdfsFileStatus * files
 
     if (res == CURLE_OK)
     {
-
         try
         {
             /*
@@ -155,6 +154,8 @@ int webhdfsconnector::getFileStatus(const char * fileurl, HdfsFileStatus * files
         if (retval != EXIT_SUCCESS)
             fprintf(stderr, "Error fetching HDFS file status.\n");
     }
+    else
+        fprintf(stderr, "Error fetching HDFS file status. Error code: %d.\n", res);
     return retval;
 }
 
@@ -212,7 +213,7 @@ int webhdfsconnector::streamFlatFileOffset(unsigned long seekPos, unsigned long 
         else
         {
             failed_attempts++;
-            fprintf(stderr, "Error attempting to read from HDFS file: \n\t%s\n", readfileurl.c_str());
+            fprintf(stderr, "Error attempting to read from HDFS file: \n\t%s. Error code %d \n", readfileurl.c_str(), res);
         }
     }
     while(res != CURLE_OK && failed_attempts <= maxretries);
@@ -459,7 +460,7 @@ double webhdfsconnector::readTargetFileOffsetToBuffer(unsigned long seekPos, uns
         else
         {
             failed_attempts++;
-            fprintf(stderr, "Error attempting to read from HDFS file: \n\t%s\n", readfileurl);
+            fprintf(stderr, "Error attempting to read from HDFS file: \n\t%s\n\tError code: %d", readfileurl, res);
         }
     }
     while(res != CURLE_OK && failed_attempts <= maxretries);
