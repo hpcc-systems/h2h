@@ -103,11 +103,11 @@
         <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
         log files are written following the following pattern:</para>
 
-        <para><programlisting>libhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
+        <para><programlisting>libhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
 
         <para>Or if you chose the webhdfs implementation:</para>
 
-        <para><programlisting>webhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.log</programlisting></para>
+        <para><programlisting>webhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
       </listitem>
 
       <listitem>
