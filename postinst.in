@@ -15,6 +15,6 @@
 #    limitations under the License.
 ################################################################################
 
-${HPCC_ETC_DIR}/init.d/install-init
+${HPCC_ETC_DIR}/init.d/install-h2h-init
 
 exit 0
