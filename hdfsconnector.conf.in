@@ -7,10 +7,11 @@ HADOOP_CONF_DIR=${HADOOP_STD_CONF_PATH}
 HADOOP_SHARE_DIR=${HADOOP_STD_SHARE_PATH}
 
 #H2H searches for libhdfs at this location:
-# ${LIBHDFS_LIBRARIES}
-#If libhdfs resides elsewhere, add correct location to LD_LIBRARY_PATH
+# ${H2H_LIBHDFS_PATH}
+#If libhdfs resides elsewhere, append correct location to H2H_LD_LIBRARY_PATH
 #Example:
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path to libhdfs.so location>
+#H2H_LD_LIBRARY_PATH=$H2H_LD_LIBRARY_PATH:<path to libhdfs.so location>
+H2H_LD_LIBRARY_PATH=${H2H_LIBHDFS_PATH}
 
 #TARBALL_HADOOP_LOCATION = location of tarball hadoop instalation
 #If hadoop was not installed via deb/rpm install package
@@ -18,10 +19,13 @@ HADOOP_SHARE_DIR=${HADOOP_STD_SHARE_PATH}
 TARBALL_HADOOP_LOCATION=${TARBALLED_HADOOP_PATH}
 
 #H2H default libjvm location:
-# ${JAVA_JVM_LIBRARY}
-# If libjvm resides elsewhere, add correct location to LD_LIBRARY_PATH
+# ${H2H_LIBJVM_PATH}
+# If libjvm resides elsewhere, append correct location to H2H_LD_LIBRARY_PATH
 #Example:
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/jvm/java-6-openjdk/jre/lib/amd64/server
+#H2H_LD_LIBRARY_PATH=$H2H_LD_LIBRARY_PATH:${H2H_LIBJVM_PATH}
+H2H_LD_LIBRARY_PATH=$H2H_LD_LIBRARY_PATH:${H2H_LIBJVM_PATH}
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$H2H_LD_LIBRARY_PATH
 
 #LOGS_LOCATION = H2H log location
 LOGS_LOCATION=$log
