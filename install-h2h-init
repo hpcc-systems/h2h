@@ -1,0 +1,201 @@
+#!/bin/bash
+################################################################################
+#    HPCC SYSTEMS software Copyright (C) 2012 HPCC Systems.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+################################################################################
+
+###<REPLACE>###
+INSTALL_DIR=/opt/HPCCSystems
+CONFIG_DIR=/etc/HPCCSystems
+ENV_XML_FILE=environment.xml
+ENV_CONF_FILE=environment.conf
+PID_DIR=/var/run/HPCCSystems
+LOCK_DIR=/var/lock/HPCCSystems
+LOG_DIR=/var/log/HPCCSystems
+
+source ${INSTALL_DIR}/etc/init.d/hpcc_common
+source ${INSTALL_DIR}/etc/init.d/init-functions
+
+installConfs () 
+{
+    fileName=$1
+    configPath=$2
+    mkdir -p ${configPath}
+    mkdir -p ${configPath}/rpmnew
+
+    printf "Installing %-44s ..." "${fileName}"
+
+    if [ ! -e ${configPath}/${fileName} ]; then
+        # Always install new files without comment
+        cp -f ${INSTALL_DIR}/${configPath}/rpmnew/${fileName} ${configPath}/${fileName}
+        cp -f ${INSTALL_DIR}/${configPath}/rpmnew/${fileName} ${configPath}/rpmnew/${fileName}
+        log_success_msg
+    elif [ -e ${configPath}/rpmnew/${fileName} ] && ! `diff -q ${configPath}/rpmnew/${fileName} ${INSTALL_DIR}/${configPath}/rpmnew/${fileName} >/dev/null` ; then
+        # There are changes in the default config since last installed
+        if ! `diff -q ${configPath}/rpmnew/${fileName} ${configPath}/${fileName} >/dev/null` ; then
+            # User has made their own changes too, so don't overwrite
+            log_failure_msg "Not overwriting modified configuration file ${fileName}"
+        else
+            # User has NOT made their own changes - ok to update
+            cp -f ${INSTALL_DIR}/${configPath}/rpmnew/${fileName} ${configPath}/${fileName}
+            cp -f ${INSTALL_DIR}/${configPath}/rpmnew/${fileName} ${configPath}/rpmnew/${fileName}
+            log_success_msg "Updated configuration file ${fileName}"
+        fi
+    else
+        log_success_msg "No changes to configuration file ${fileName}"
+    fi
+}
+
+
+installFile ()
+{
+    fileNameFrom=$1
+    fileNameTo=$2
+    symlink=$3
+    createDir=$4
+    option="-f"
+    if [ ${symlink} != 0 ];then
+        option="-sf"
+    fi
+
+    if [ ! -z "${createDir}" ]; then
+        if [ ! -d ${createDir} ];then
+            mkdir -p ${createDir}
+        fi
+    fi
+
+    cp ${option} ${fileNameFrom} ${fileNameTo} 2> /dev/null
+
+    printf "Installing %-44s ..." "${fileNameTo}"
+    if [ -L ${fileNameTo} ]; then
+        log_success_msg
+    elif [ -e ${fileNameTo} ] && [ ! -L ${fileNameTo} ] ; then
+        log_success_msg
+    else
+        log_failure_msg
+    fi
+}
+
+
+fileCheck ()
+{
+    inFile=$1
+    echo -n "Checking SSH Key for user $user ..."
+    if [ ! -e $inFile ]; then
+        echo "Fail"
+        echo "Bad File name"
+    fi
+
+    while read line
+    do
+        first=$( echo $line | awk '{ print $1 }' )
+        second=$( echo $line | awk '{ print $2 }' )
+
+        passValue=0
+        if [ -f $first ] && [ -f $second ]; then
+            newSum=$( md5sum $second )
+            if [ ${newSum} -eq ${first} ]; then
+                sc=0
+            else
+                sc=1
+            fi
+        else
+            sc=0
+        fi
+
+        if [ "$sc" -gt 0 ]; then
+           passValue=$(( ${passValue} + 1 )) 
+        fi  
+    done < ${inFile}
+
+    if [ ${passValue} -lt 3 ]; then
+        __fileCheck=0
+        echo "Fail"
+        echo "*** Security Alert ***"
+        echo "You are using a publicly available default key."
+        echo "Please run 'sudo ${path}/sbin/keygen.sh' to generate a new key to make your system secure."
+        echo "***  Security Alert  ***"
+    else
+        __fileCheck=1
+        echo "OK"
+    fi
+
+}
+#---------------------------------------------------------------------
+# Main code
+#---------------------------------------------------------------------
+SECTION=${SECTION:-DEFAULT}
+
+confToUse="${INSTALL_DIR}${CONFIG_DIR}/${ENV_CONF_FILE}"
+
+if [ -d ${CONFIG_DIR} ]; then
+    if [ -e ${CONFIG_DIR}/${ENV_CONF_FILE} ]; then
+        confToUse="${CONFIG_DIR}/${ENV_CONF_FILE}"
+    fi
+fi
+
+# Reading and processing conf file
+cfg.parser ${confToUse}
+cfg.section.${SECTION}
+
+if [ ${DEBUG:-NO_DEBUG} != "NO_DEBUG" ]; then
+    echo "\$runtime=$runtime"
+    echo "\$path=$path"
+    echo "\$configs=$configs"
+    echo "\$configsbackup=$configsbackup"
+    echo "\$user=$user"
+    echo "\$lock=$lock"
+    echo "\$pid=$pid"
+    echo "\$log=$log"
+    echo "\$environment=$environment"
+    echo "\$interface=$interface"
+    echo "\$sourcedir=$sourcedir"
+    echo
+fi
+
+if [ "$HOME" != "$home" ]; then
+    echo "Linux Default home directory is different from HPCC default."
+    echo "Will continue to work with Linux Default $HOME....."
+    homePath=$HOME/$user
+fi
+
+initPath="$path/etc/init.d"
+homePath=$HOME/$user
+binPath="$path/bin"
+
+# installing files
+installConfs "hdfsconnector.conf" $configs/ 1 || exit 1
+
+# locate sub install files.
+#if [ -d ${INSTALL_DIR}/etc/init.d/install ]; then
+#    for subInstall in $(ls ${INSTALL_DIR}/etc/init.d/install); do
+#        source ${INSTALL_DIR}/etc/init.d/install/${subInstall}
+#    done
+#fi
+
+# bash completion
+#if [ -d ${INSTALL_DIR}/etc/bash_completion.d ] && [ -d /etc/bash_completion.d ]; then
+#    for subInstall in $(ls ${INSTALL_DIR}/etc/bash_completion.d | grep -v dpkg-tmp); do
+#        installFile ${INSTALL_DIR}/etc/bash_completion.d/$subInstall /etc/bash_completion.d/$subInstall 1 || exit 1
+#    done
+#fi
+
+# Ubuntu Unity Launcher
+#if [ -f ${INSTALL_DIR}/share/hpcc-systems.desktop ] && [ -d /usr/share/applications ]; then
+#    installFile ${INSTALL_DIR}/share/hpcc-systems.desktop /usr/share/applications 1 || exit 1
+#fi
+
+chown root:$group ${configs}
+chown -R $user:$group ${configs}/*
+chmod 775 ${configs}
