@@ -62,12 +62,10 @@ for ((paramindex=1; paramindex <= $#; paramindex++ ));
    then
         ((paramindex++));
         wuid=${!paramindex};
-        echo "found wuid: $wuid";
    elif [ "${!paramindex}" = "-nodeid" ];
    then
         ((paramindex++));
         nodeid=${!paramindex};
-        echo "found nodeid: $nodeid";
    fi
 done;
 
