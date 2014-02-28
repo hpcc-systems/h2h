@@ -10,11 +10,11 @@ it.
 
 For PipeOutAndMerge to work the target HDFS must have append support enabled.  Be default it's disabled.  To
 enable it add this to hdfs-site.xml:
-		<property>
-			<name>dfs.support.append</name>
-			<value>true</value>
-			<final>true</value>
-		</property>
+        <property>
+            <name>dfs.support.append</name>
+            <value>true</value>
+            <final>true</value>
+        </property>
 */
 
 import std;
@@ -34,7 +34,7 @@ EXPORT HDFSConnector := MODULE
                               As long as the local hadoop conf folder is visible to the 'hdfspipe' script
     */
 
-    export PipeIn(ECL_RS, HadoopFileName, Layout, HadoopFileFormat, HDFSHost, HDSFPort) := MACRO
+    export PipeIn(ECL_RS, HadoopFileName, Layout, HadoopFileFormat, HDFSHost, HDSFPort, ConnectorOptions='') := MACRO
   #uniquename(mywuid)
   %mywuid% := ' -wuid ' + STD.system.Job.wuid();
     #uniquename(formatstr)
@@ -90,6 +90,10 @@ EXPORT HDFSConnector := MODULE
                 + ' -filename ' + HadoopFileName
                 + ' -format CSV'
                 + %mywuid%
+                + ' -whdfsretrymax 10 '
+            #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                + ' ' + ConnectorOptions
+            #END
 
             #IF ( LENGTH(%terminatorseq%) > 0)
                 + ' -terminator ' + %terminatorseq%
@@ -108,7 +112,8 @@ EXPORT HDFSConnector := MODULE
                 + ' -reclen ' + sizeof(Layout)
                 + ' -filename ' + HadoopFileName
                 + ' -format '   +  %formatstr%
-                + ' -host ' + HDFSHost + ' -port ' + HDSFPort,
+                + ' -host ' + HDFSHost + ' -port ' + HDSFPort
+                + %mywuid%,
                 Layout);
         #END
     ENDMACRO;
