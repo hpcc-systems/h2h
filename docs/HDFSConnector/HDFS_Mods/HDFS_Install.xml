@@ -63,20 +63,19 @@
   <sect2>
     <title>Errors and Log Files</title>
 
-    <para>If you encounter an error, you should refer to the log files.</para>
-
-    <para>The HDFS Connector writes log files to a directory named <emphasis
+    <para>If you encounter an error, please refer to the log files. The HDFS
+    Connector writes log files to a directory named <emphasis
     role="bluebold">mydataconnectors</emphasis> in the the HPCC log directory
     (the HPCC log location can be set using Configuration Manager).</para>
 
     <para>The default location is:</para>
 
     <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
-    log files are written following the following pattern:</para>
+    log files are written using the following pattern:</para>
 
     <para><programlisting>libhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
 
-    <para>Or if you chose the webhdfs implementation:</para>
+    <para>Or if you choose the webhdfs implementation:</para>
 
     <para><programlisting>webhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
 
@@ -94,9 +93,9 @@
 
       <programlisting>"Failed on local exception: java.io.EOFException" </programlisting>
 
-      <para>Is a Java error and in some cases it might relate to a networking
-      issue. In this event verify the target Hadoop (HDFS) IP and/or
-      port.</para>
+      <para>The above example is a Java error and in some cases it might
+      relate to a networking issue. In this event verify the target Hadoop
+      (HDFS) IP and/or port.</para>
     </sect3>
 
     <sect3>
@@ -155,12 +154,11 @@
                   <entry><inlinegraphic
                   fileref="../../images/tip.jpg" /></entry>
 
-                  <entry>There are log files for each component in directories
-                  below <emphasis
+                  <entry>If you encounter any errors or other unexpected
+                  behavior, check the log files. The logs can be found in the
+                  directories below <emphasis
                   role="bold">/var/log/HPCCSystems/mydataconnectors</emphasis>
-                  (default location). If you get any errors, or other
-                  unexpected behavior, check the logs to help in
-                  troubleshooting.</entry>
+                  (default location). </entry>
                 </row>
               </tbody>
             </tgroup>
