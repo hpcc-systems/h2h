@@ -61,6 +61,54 @@
   </sect2>
 
   <sect2>
+    <title>Errors and Log Files</title>
+
+    <para>If you encounter an error, please refer to the log files. The HDFS
+    Connector writes log files to a directory named <emphasis
+    role="bluebold">mydataconnectors</emphasis> in the the HPCC log directory
+    (the HPCC log location can be set using Configuration Manager).</para>
+
+    <para>The default location is:</para>
+
+    <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
+    log files are written using the following pattern:</para>
+
+    <para><programlisting>libhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
+
+    <para>Or if you choose the webhdfs implementation:</para>
+
+    <para><programlisting>webhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
+
+    <para>Refer to these log files to get a better understanding of the
+    errors, and for troubleshooting.</para>
+
+    <sect3>
+      <title>Troubleshooting LibHDFS</title>
+
+      <para>You may encounter errors reported by the JVM. You should refer to
+      the Java and/or Hadoop documentation for specific error messages and the
+      meaning.</para>
+
+      <para>For example:</para>
+
+      <programlisting>"Failed on local exception: java.io.EOFException" </programlisting>
+
+      <para>The above example is a Java error and in some cases it might
+      relate to a networking issue. In this event verify the target Hadoop
+      (HDFS) IP and/or port.</para>
+    </sect3>
+
+    <sect3>
+      <title>Troubleshooting WebHDFS</title>
+
+      <para>The webhdfs version uses libcurl for communication with Hadoop
+      (HDFS). The errors reported by libcurl can be cryptic. For better
+      understanding of the libcurl errors look them up under libcurl error
+      codes.</para>
+    </sect3>
+  </sect2>
+
+  <sect2 id="Editing_and_Distributing-ConfigFile" role="brk">
     <title>Editing and distributing the Configuration file</title>
 
     <para>Once you install the H2H Connector package, if you edit the
@@ -85,29 +133,36 @@
             <term>Note:</term>
 
             <listitem>
-              <para>If you get a runtime error, such as "library can't be
-              found," check the library paths in your configurations file and
-              edit, if needed. The installed configuration file contains
+              <para>If you encounter a runtime error, such as "library can't
+              be found," check the library paths in your configuration file
+              and edit, if needed. The installed configuration file contains
               samples to help you.</para>
             </listitem>
           </varlistentry>
         </variablelist>
 
-        <para>The HDFS Connector writes log files to a folder named <emphasis
-        role="bluebold">mydataconnectors</emphasis> in the the HPCC log
-        directory (the HPCC log location can be set using Configuration
-        Manager).</para>
+        <para><informaltable colsep="1" frame="all" rowsep="1">
+            <?dbfo keep-together="always"?>
 
-        <para>The default location is:</para>
+            <tgroup cols="2">
+              <colspec colwidth="49.50pt" />
 
-        <para><programlisting>/var/log/HPCCSystems/mydataconnectors/</programlisting>The
-        log files are written following the following pattern:</para>
+              <colspec />
 
-        <para><programlisting>libhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
+              <tbody>
+                <row>
+                  <entry><inlinegraphic
+                  fileref="../../images/tip.jpg" /></entry>
 
-        <para>Or if you chose the webhdfs implementation:</para>
-
-        <para><programlisting>webhdfsconnector.&lt;nodeid&gt;.&lt;PID&gt;.&lt;wuid&gt;.log</programlisting></para>
+                  <entry>If you encounter any errors or other unexpected
+                  behavior, check the log files. The logs can be found in the
+                  directories below <emphasis
+                  role="bold">/var/log/HPCCSystems/mydataconnectors</emphasis>
+                  (default location). </entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable></para>
       </listitem>
 
       <listitem>

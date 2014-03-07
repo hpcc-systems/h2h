@@ -33,6 +33,10 @@
               <para>The configuration file
               (/etc/HPCCSystems/hdfsconnector.conf)</para>
             </listitem>
+
+            <listitem>
+              <para>Log files (/var/log/HPCCSystems/mydataconnectors/)</para>
+            </listitem>
           </itemizedlist></para>
       </listitem>
 
