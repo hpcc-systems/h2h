@@ -791,7 +791,11 @@ int libhdfsconnector::mergeFile()
 
                 if (cleanmerge)
                 {
+#ifdef HADOOP_GT_21
+                    hdfsDelete(fs, filepartname.c_str(), 0);
+#else
                     hdfsDelete(fs, filepartname.c_str());
+#endif
                 }
             }
             else
@@ -810,7 +814,11 @@ int libhdfsconnector::mergeFile()
             string filecontainer;
             filecontainer.assign(fileName);
             filecontainer.append("-parts");
-            hdfsDelete(fs, filecontainer.c_str());
+#ifdef HADOOP_GT_21
+                    hdfsDelete(fs, filecontainer.c_str(), 0);
+#else
+                    hdfsDelete(fs, filecontainer.c_str());
+#endif
         }
     }
     return EXIT_SUCCESS;

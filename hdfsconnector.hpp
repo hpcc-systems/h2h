@@ -17,7 +17,8 @@
  ############################################################################## */
 
 #include <stdio.h>
-#include <string>
+#include <stdlib.h>
+#include <string.h>
 #include <vector>
 #include <iostream>
 #include <sstream>

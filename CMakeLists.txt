@@ -154,6 +154,11 @@ IF ( NOT MAKE_DOCS_ONLY )
         SET (TARBALLED_HADOOP_PATH "/usr/local/hadoop")
     ENDIF()
 
+    OPTION(SRC_BUILT_HADOOP_PATH "If building against locally built Hadoop, set the src location here.")
+    IF( NOT SRC_BUILT_HADOOP_PATH )
+        SET (SRC_BUILT_HADOOP_PATH "/usr/local/hadoop/src")
+    ENDIF()
+
     CONFIGURE_FILE("${HPCC_SOURCE_DIR}/postinst.in" "postinst")
     MESSAGE ("-- Building ${HDFS_CONNECTOR_TYPE} --")
     IF ( BUILD_WEBHDFS_VER )

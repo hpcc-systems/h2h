@@ -23,6 +23,10 @@
 #  LIBHDFS_INCLUDE_DIR - the LIBHDFS include directory
 #  LIBHDFS_LIBRARIES - The libraries needed to use LIBHDFS
 
+if(HADOOP_VER GREATER 2.1)
+	ADD_DEFINITIONS(-DHADOOP_GT_21)
+endif()
+
 if (NOT LIBHDFS_FOUND)
   IF (WIN32)
     SET (libhdfs_libs "hdfs" "libhdfs")
@@ -32,7 +36,16 @@ if (NOT LIBHDFS_FOUND)
 
   IF (NOT USE_NATIVE_LIBRARIES)
     MESSAGE("-- Searching for libhdfs: NOT using native libraries")
-    MESSAGE("--  Will use tarballed location ( ${TARBALLED_HADOOP_PATH}) to find header file and lib file.")
+
+    SET( POSSILE_PATHS
+         "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs"
+         "${TARBALLED_HADOOP_PATH}/c++/${hdfsosdir}/lib"
+         "${SRC_BUILT_HADOOP_PATH}/hadoop-${HADOOP_VER}-src/hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${HADOOP_VER}/include"
+         "${SRC_BUILT_HADOOP_PATH}/hadoop-${HADOOP_VER}-src/hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${HADOOP_VER}/lib/native/"
+       )
+
+    MESSAGE("--  Exploring these paths to fine libhdfs and hdfs.h: ${POSSILE_PATHS}.")
+
     IF (UNIX)
       IF (${ARCH64BIT} EQUAL 1)
         SET (hdfsosdir "Linux-amd64-64")
@@ -45,8 +58,8 @@ if (NOT LIBHDFS_FOUND)
       SET (hdfsosdir "unknown")
     ENDIF()
     IF (NOT ("${hdfsosdir}" STREQUAL "unknown"))
-      FIND_PATH (LIBHDFS_INCLUDE_DIR NAMES hdfs.h PATHS "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs" NO_DEFAULT_PATH)
-      FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS "${TARBALLED_HADOOP_PATH}/c++/${hdfsosdir}/lib" NO_DEFAULT_PATH)
+      FIND_PATH (LIBHDFS_INCLUDE_DIR NAMES hdfs.h PATHS ${POSSILE_PATHS} NO_DEFAULT_PATH)
+      FIND_LIBRARY (LIBHDFS_LIBRARIES NAMES ${libhdfs_libs} PATHS ${POSSILE_PATHS} NO_DEFAULT_PATH)
     ENDIF()
   ELSE()
     MESSAGE("-- Searching for libhdfs using native libraries location.")
