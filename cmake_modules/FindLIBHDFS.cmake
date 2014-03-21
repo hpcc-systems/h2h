@@ -44,7 +44,7 @@ if (NOT LIBHDFS_FOUND)
          "${SRC_BUILT_HADOOP_PATH}/hadoop-${HADOOP_VER}-src/hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${HADOOP_VER}/lib/native/"
        )
 
-    MESSAGE("--  Exploring these paths to fine libhdfs and hdfs.h: ${POSSILE_PATHS}.")
+    MESSAGE("--  Exploring these paths to find libhdfs and hdfs.h: ${POSSILE_PATHS}.")
 
     IF (UNIX)
       IF (${ARCH64BIT} EQUAL 1)
@@ -93,4 +93,17 @@ if (NOT LIBHDFS_FOUND)
   )
 
   MARK_AS_ADVANCED(LIBHDFS_INCLUDE_DIR LIBHDFS_LIBRARIES )
+
+    IF (LIBHDFS_FOUND)
+         MESSAGE ("---LIBHDFS ${LIBHDFS_LIBRARIES} found.")
+    ELSE()
+        MESSAGE ("---LIBHDFS library not found.")
+    ENDIF()
+
+    IF (LIBHDFS_INCLUDE_DIR)
+         MESSAGE ("---LIBHDFS ${LIBHDFS_INCLUDE_DIR} found.")
+    ELSE()
+        MESSAGE ("---HDFS header not found.")
+    ENDIF()
+
 ENDIF()
