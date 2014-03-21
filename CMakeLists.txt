@@ -149,15 +149,8 @@ IF ( NOT MAKE_DOCS_ONLY )
     SET ( HADOOP_STD_CONF_PATH "/etc/hadoop" )
     SET ( HADOOP_STD_SHARE_PATH "/usr/share/hadoop" )
 
-    OPTION(TARBALLED_HADOOP_PATH "Set the Hadoop path.")
-    IF( NOT TARBALLED_HADOOP_PATH )
-        SET (TARBALLED_HADOOP_PATH "/usr/local/hadoop")
-    ENDIF()
-
-    OPTION(SRC_BUILT_HADOOP_PATH "If building against locally built Hadoop, set the src location here.")
-    IF( NOT SRC_BUILT_HADOOP_PATH )
-        SET (SRC_BUILT_HADOOP_PATH "/usr/local/hadoop/src")
-    ENDIF()
+    SET ( TARBALLED_HADOOP_PATH "/usr/local/hadoop" CACHE FILEPATH "Path to hadoop tarballed location-used to find hdfs.h and libhdfs.so")
+    SET ( SRC_BUILT_HADOOP_PATH "" CACHE FILEPATH "Path to hadoop src location-used to find hdfs.h and libhdfs.so")
 
     CONFIGURE_FILE("${HPCC_SOURCE_DIR}/postinst.in" "postinst")
     MESSAGE ("-- Building ${HDFS_CONNECTOR_TYPE} --")

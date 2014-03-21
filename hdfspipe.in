@@ -29,12 +29,39 @@ CLASSPATH=$CLASSPATH:$HADOOP_CONF_DIR
 
 ###################################################
 # CLASSPATH set up for libhdfs
+# One of the most common problems with libhdfs is the CLASSPATH is not set properly when calling a program that uses libhdfs.
+# per Hadoop: http://hadoop.apache.org/docs/r2.3.0/hadoop-project-dist/hadoop-hdfs/LibHdfs.html
+# Make sure you set it to all the Hadoop jars needed to run Hadoop itself.
+# Currently, there is no way to programmatically generate the classpath, but a good bet is to include all the jar files in
+# $HADOOP_PREFIX and $HADOOP_PREFIX/lib as well as the right configuration directory containing hdfs-site.xml
+# However as it turns out, the jars are in different subfolders under the share directory
+#
 ###################################################
 for f in $HADOOP_SHARE_DIR/*.jar ; do
     CLASSPATH=$CLASSPATH:$f
 done
 
 for f in $HADOOP_SHARE_DIR/lib/*.jar ; do
+    CLASSPATH=$CLASSPATH:$f
+done
+
+for f in $HADOOP_SHARE_DIR/hadoop/hdfs/*.jar ; do
+    CLASSPATH=$CLASSPATH:$f
+done
+
+for f in $HADOOP_SHARE_DIR/hadoop/hdfs/lib/*.jar ; do
+    CLASSPATH=$CLASSPATH:$f
+done
+
+for f in $HADOOP_SHARE_DIR/hadoop/common/*.jar ; do
+    CLASSPATH=$CLASSPATH:$f
+done
+
+for f in $HADOOP_SHARE_DIR/hadoop/common/lib/*.jar ; do
+    CLASSPATH=$CLASSPATH:$f
+done
+
+for f in $HADOOP_SHARE_DIR/hadoop/tools/lib/*.jar ; do
     CLASSPATH=$CLASSPATH:$f
 done
 
@@ -169,6 +196,51 @@ then
 else
     echo "Error: check your params."             >> $LOG;
     h2hstatus=1;
+fi
+
+if [ ${h2hstatus} -ne 0 ]
+then
+    if [ "$TARGETCONNECTORNAME" = "libhdfsconnector" ]
+    then
+    echo ""                                                                                              >> $LOG
+        if [ -z "$TARBALL_HADOOP_LOCATION" ] && [ -z "$HADOOP_SHARE_DIR" ]
+        then
+           echo "WARNING: both TARBALL_HADOOP_LOCATION and HADOOP_SHARE_DIR are empty"                   >> $LOG
+           echo "This could cause incomplete classpath setup which is necessary to use"                  >> $LOG
+		fi
+
+		if [ -n "$TARBALL_HADOOP_LOCATION" ] && [ ! -d "$TARBALL_HADOOP_LOCATION" ]
+        then
+           echo "WARNING: The specified TARBALL_HADOOP_LOCATION value is invalid: $TARBALL_HADOOP_LOCATION"  >> $LOG
+           echo "This value might be necessary for running libhdfs."                                     >> $LOG
+        fi
+
+        if [ -n "$HADOOP_SHARE_DIR" ] && [ ! -d "$HADOOP_SHARE_DIR" ]
+        then
+           echo "WARNING: The specified HADOOP_SHARE_DIR value is invalid: $HADOOP_SHARE_DIR"            >> $LOG
+           echo "This value might be necessary for running libhdfs."                                     >> $LOG
+        fi
+
+        echo "" >> $LOG
+        echo "A common error running h2h, is inaccesible pre-requisites."                                >> $LOG
+
+        PATHSEP=":";
+        arr=$(echo $LD_LIBRARY_PATH | tr "$PATHSEP" "\n")
+
+        for v in $arr
+        do
+            if [ -n "$v" ] && [ ! -d "$v" ]
+            then
+               echo "WARNING: detected an invalid entry in LD_LIBRARY_PATH: $v"                          >> $LOG
+               echo "Is this entry necessary to run H2H?"                                                >> $LOG
+            fi
+        done
+
+        echo ""                                                                                          >> $LOG
+        echo "Please verify all configuration entries in $configs/@HDFSCONN_CONF_FILE@"                  >> $LOG
+
+    echo ""                                                                                              >> $LOG
+	fi
 fi
 
 echo "$TARGETCONNECTORNAME exited with: ${h2hstatus}"            >> $LOG

@@ -37,12 +37,23 @@ if (NOT LIBHDFS_FOUND)
   IF (NOT USE_NATIVE_LIBRARIES)
     MESSAGE("-- Searching for libhdfs: NOT using native libraries")
 
-    SET( POSSILE_PATHS
-         "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs"
-         "${TARBALLED_HADOOP_PATH}/c++/${hdfsosdir}/lib"
-         "${SRC_BUILT_HADOOP_PATH}/hadoop-${HADOOP_VER}-src/hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${HADOOP_VER}/include"
-         "${SRC_BUILT_HADOOP_PATH}/hadoop-${HADOOP_VER}-src/hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${HADOOP_VER}/lib/native/"
-       )
+     IF ( SRC_BUILT_HADOOP_PATH STREQUAL "" )
+	MESSAGE("---SRC_BUILT_HADOOP_PATH not specified")
+     ELSE ()
+        LIST (APPEND POSSILE_PATHS
+            "${SRC_BUILT_HADOOP_PATH}/hadoop-${HADOOP_VER}-src/hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${HADOOP_VER}/include"
+            "${SRC_BUILT_HADOOP_PATH}/hadoop-${HADOOP_VER}-src/hadoop-hdfs-project/hadoop-hdfs/target/hadoop-hdfs-${HADOOP_VER}/lib/native/"
+           )
+     ENDIF ()
+
+     IF ( TARBALLED_HADOOP_PATH STREQUAL "" )
+        MESSAGE("---TARBALLED_HADOOP_PATH not specified")
+     ELSE ()
+        LIST (APPEND POSSILE_PATHS
+             "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs"
+             "${TARBALLED_HADOOP_PATH}/c++/${hdfsosdir}/lib"
+           )
+     ENDIF()
 
     MESSAGE("--  Exploring these paths to find libhdfs and hdfs.h: ${POSSILE_PATHS}.")
 
