@@ -34,7 +34,7 @@ EXPORT HDFSConnector := MODULE
                               As long as the local hadoop conf folder is visible to the 'hdfspipe' script
     */
 
-    export PipeIn(ECL_RS, HadoopFileName, Layout, HadoopFileFormat, HDFSHost, HDSFPort, ConnectorOptions='') := MACRO
+    export PipeIn(ECL_RS, HadoopFileName, Layout, HadoopFileFormat, HDFSHost, HDSFPort, HDFSUser='', ConnectorOptions='') := MACRO
   #uniquename(mywuid)
   %mywuid% := ' -wuid ' + STD.system.Job.wuid();
     #uniquename(formatstr)
@@ -71,6 +71,13 @@ EXPORT HDFSConnector := MODULE
                 // + ' -headertext ' + '???'
                 // + ' -footertext ' + '???'
                 + ' -host ' + HDFSHost + ' -port ' + HDSFPort
+                #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                + ' ' + ConnectorOptions
+                #END
+
+                #IF ( LENGTH(#TEXT(HDFSUser)) > 0)
+                + ' -hdfsuser ' + HDFSUser
+                #END
                 + %mywuid%,
                 Layout, HadoopFileFormat);
 
@@ -102,6 +109,10 @@ EXPORT HDFSConnector := MODULE
             #IF ( LENGTH(%quoteseq%) > 0)
                 + ' -quote ' + '\'' + %quoteseq% + '\''
             #END
+
+            #IF ( LENGTH(#TEXT(HDFSUser)) > 0)
+                + ' -hdfsuser ' + HDFSUser
+            #END
                 ; //Do not remove terminating semicolon
 
             ECL_RS:= PIPE( %pipecmndstr%, Layout, HadoopFileFormat);
@@ -113,6 +124,13 @@ EXPORT HDFSConnector := MODULE
                 + ' -filename ' + HadoopFileName
                 + ' -format '   +  %formatstr%
                 + ' -host ' + HDFSHost + ' -port ' + HDSFPort
+                #IF ( LENGTH(#TEXT(HDFSUser)) > 0)
+                + ' -hdfsuser ' + HDFSUser
+                #END
+
+                #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                + ' ' + ConnectorOptions
+                #END
                 + %mywuid%,
                 Layout);
         #END
@@ -153,6 +171,9 @@ EXPORT HDFSConnector := MODULE
                 + ' -nodeid ' + STD.system.Thorlib.node()
                 + ' -clustercount ' + STD.system.Thorlib.nodes()
                 + ' -hdfsuser ' + HDFSUser
+                #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                + ' ' + ConnectorOptions
+                #END
                 + %mywuid%, HadoopFileFormat));
         #ELSE
         OUTPUT(ECL_RS,,
@@ -162,6 +183,9 @@ EXPORT HDFSConnector := MODULE
                 + ' -filename ' + HadoopFileName
                 + ' -nodeid ' + STD.system.Thorlib.node()
                 + ' -clustercount ' + STD.system.Thorlib.nodes()
+                #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                + ' ' + ConnectorOptions
+                #END
                 + ' -hdfsuser ' + HDFSUser
                 + %mywuid%));
         #END
@@ -204,6 +228,9 @@ EXPORT HDFSConnector := MODULE
                 + ' -nodeid ' + STD.system.Thorlib.node()
                 + ' -clustercount ' + STD.system.Thorlib.nodes()
                 + ' -hdfsuser ' + HDFSUser
+                #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                + ' ' + ConnectorOptions
+                #END
                 + %mywuid%, HadoopFileFormat));
 
                 %mergepartsaction%:=OUTPUT(PIPE('hdfspipe -mf'
@@ -213,6 +240,9 @@ EXPORT HDFSConnector := MODULE
                  + ' -cleanmerge  1'
                  + ' -hdfsuser ' + HDFSUser
                  + ' -host ' + HDFSHost     + ' -port ' + HDSFPort
+                 #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                 + ' ' + ConnectorOptions
+                 #END
                  + %mywuid%, Layout));
                  SEQUENTIAL(%outpartaction%, %mergepartsaction%);
         #ELSE
@@ -224,6 +254,9 @@ EXPORT HDFSConnector := MODULE
                 + ' -nodeid ' + STD.system.Thorlib.node()
                 + ' -clustercount ' + STD.system.Thorlib.nodes()
                 + ' -hdfsuser ' + HDFSUser
+                #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                + ' ' + ConnectorOptions
+                #END
                 + %mywuid%));
 
                 %mergepartsaction%:=OUTPUT(PIPE('hdfspipe -mf'
@@ -233,6 +266,9 @@ EXPORT HDFSConnector := MODULE
                  + ' -cleanmerge  1'
                  + ' -hdfsuser ' + HDFSUser
                  + ' -host ' + HDFSHost + ' -port ' + HDSFPort
+                 #IF ( LENGTH(#TEXT(ConnectorOptions)) > 0)
+                 + ' ' + ConnectorOptions
+                 #END
                  + %mywuid%, Layout));
                  SEQUENTIAL(%outpartaction%, %mergepartsaction%);
         #END
