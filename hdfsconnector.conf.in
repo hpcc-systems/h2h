@@ -3,7 +3,22 @@
 HADOOP_CONF_DIR=${HADOOP_STD_CONF_PATH}
 
 #HADOOP_SHARE_DIR = location of hadoop share files
-#if hadoop was installed via deb/rpm install package
+#IT IS VERY IMPORTANT TO SET THIS VARIABLE CORRECTLY
+#This is used to set up the classpath for libhdfs.
+#
+# per Hadoop: http://hadoop.apache.org/docs/r2.3.0/hadoop-project-dist/hadoop-hdfs/LibHdfs.html
+# One of the most common problems with libhdfs is the CLASSPATH is not set properly when calling a program that uses libhdfs.
+# Make sure you set it to all the Hadoop jars needed to run Hadoop itself.
+# Currently, there is no way to programmatically generate the classpath, but a good bet is to include all the jar files in
+# $HADOOP_PREFIX and $HADOOP_PREFIX/lib as well as the right configuration directory containing hdfs-site.xml
+# However as it turns out, the jars are in different subfolders under the share directory
+#
+# The share folder contains certain needed jar files such as:
+# /hadoop/hdfs/hadoop-hdfs-2.3.0.jar, hadoop/common/hadoop-common-2.3.0.jar, etc
+# NOTE: the contents of this path has changed in Hadoop's packaging strategy. Starting hadoop 2.x, the share folder only
+# contains 32 bit binaries. And it is then, the user's responsibility to build all necessary libs/jars.
+# This path is used by the h2h connector to build the necessary libhdfs classpath.
+#Example: HADOOP_SHARE_DIR=${HADOOP_STD_SHARE_PATH}
 HADOOP_SHARE_DIR=${HADOOP_STD_SHARE_PATH}
 
 #H2H searches for libhdfs at this location:
@@ -16,6 +31,8 @@ H2H_LD_LIBRARY_PATH=${H2H_LIBHDFS_PATH}
 #TARBALL_HADOOP_LOCATION = location of tarball hadoop instalation
 #If hadoop was not installed via deb/rpm install package
 #enable this var.
+#NOTE: starting in 2.x, Hadoop stopped distributing pre-built native libraries
+#This value is most likely only useful for Hadoop distributions prior to 2.x
 TARBALL_HADOOP_LOCATION=${TARBALLED_HADOOP_PATH}
 
 #H2H default libjvm location:
