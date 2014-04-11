@@ -34,7 +34,14 @@ int webhdfsconnector::reachWebHDFS()
 
     string getFileStatus;
     getFileStatus.append(baseurl);
-    getFileStatus.append("?op=GETFILESTATUS");
+    if (hasUserName())
+    {
+        getFileStatus.append("?user.name=");
+        getFileStatus.append(username);
+        getFileStatus.append("&op=GETFILESTATUS");
+    }
+    else
+        getFileStatus.append("?op=GETFILESTATUS");
 
     fprintf(stderr, "Testing connection: %s\n", getFileStatus.c_str());
     curl_easy_setopt(curl, CURLOPT_URL, getFileStatus.c_str());
