@@ -75,6 +75,12 @@ long libhdfsconnector::getFileSize(const char * filename)
 
 long libhdfsconnector::getRecordCount(long fsize, int clustersize, int reclen, int nodeid)
 {
+    if (reclen <= 0)
+    {
+        fprintf(stderr, "Invalid record length detected (%d)", reclen);
+        return RETURN_FAILURE;
+    }
+
     long readSize = fsize / reclen / clustersize;
     if (fsize % reclen)
     {
