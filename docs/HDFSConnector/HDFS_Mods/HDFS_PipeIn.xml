@@ -68,7 +68,7 @@
           </row>
 
           <row>
-            <entry>HDFSUser</entry>
+            <entry><emphasis>HDFSUser</emphasis></entry>
 
             <entry>Optional. HDFS username to use in order to read the
             file.</entry>
