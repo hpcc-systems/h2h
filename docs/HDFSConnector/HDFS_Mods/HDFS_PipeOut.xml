@@ -67,7 +67,7 @@
           </row>
 
           <row>
-            <entry>HDFSUser</entry>
+            <entry><emphasis>HDFSUser</emphasis></entry>
 
             <entry>HDFS username to use in order to write the file. This user
             must have permission to write to the target HDFS location.</entry>
