@@ -50,8 +50,8 @@
           <row>
             <entry><emphasis> </emphasis></entry>
 
-            <entry align="left"> default values for SEPARATOR: ',' TERMINATOR:
-            '\n' QUOTE: ''' </entry>
+            <entry align="left">default values for SEPARATOR: ',' TERMINATOR:
+            '\n' QUOTE: '''</entry>
           </row>
 
           <row>
@@ -69,9 +69,8 @@
           <row>
             <entry>HDFSUser</entry>
 
-            <entry>HDFS username to use to login to HDFS in order to write the
-            file. This user must have permission to write to the target HDFS
-            location.</entry>
+            <entry>HDFS username to use in order to write the file. This user
+            must have permission to write to the target HDFS location.</entry>
           </row>
         </tbody>
       </tgroup>
@@ -112,7 +111,7 @@ DataConnectors.HDFSConnector.PipeOut(MyDataFile,
                             '/user/hadoop/test/MyData1',
                             Layout_Flat, FLAT, 
                             '192.168.56.120', 
-                            54310 
+                            54310, 
                             'hadoopusername' );
 </programlisting>
 
@@ -139,7 +138,7 @@ DataConnectors.HDFSConnector.PipeOut(MyDataFile,
                             '/user/hadoop/test/MyData1', 
                             Layout_CSV, CSV, 
                             '192.168.56.120', 
-                            54310 
+                            54310, 
                             'hadoopusername' );
 </programlisting>
 
