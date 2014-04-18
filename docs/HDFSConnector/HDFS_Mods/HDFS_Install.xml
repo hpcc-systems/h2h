@@ -10,14 +10,17 @@
     <para>The installation and package that you download is different
     depending on the operating system you plan to use.</para>
 
-    <para>Download the appropriate package for your operating system.</para>
+    <para>Download the appropriate package for your operating system
+    from:</para>
+
+    <para><programlisting>http://hpccsystems.com/permlink/hadop-integration</programlisting></para>
 
     <para>You must install the package on every HPCC node.</para>
 
     <para>To install the package, follow the installation instructions for
     your operating system:</para>
 
-    <para><emphasis role="bold">Centos/Red Hat/SuSe</emphasis></para>
+    <para><emphasis role="bold">Centos/Red Hat</emphasis></para>
 
     <itemizedlist>
       <listitem>
@@ -28,22 +31,6 @@
         fresh if no other version has been installed.</para>
 
         <programlisting>sudo rpm -Uvh &lt;rpm file name&gt;</programlisting>
-
-        <variablelist>
-          <varlistentry>
-            <term>Note:</term>
-
-            <listitem>
-              <para>For ANY version of SuSe you must set a password for the
-              <emphasis role="bluebold">hpcc</emphasis> user on all nodes. One
-              way to do do this is to issue the following command:</para>
-
-              <programlisting>sudo passwd hpcc</programlisting>
-
-              <para>Be sure to set the password on ALL nodes.</para>
-            </listitem>
-          </varlistentry>
-        </variablelist>
       </listitem>
     </itemizedlist>
 
@@ -158,7 +145,7 @@
                   behavior, check the log files. The logs can be found in the
                   directories below <emphasis
                   role="bold">/var/log/HPCCSystems/mydataconnectors</emphasis>
-                  (default location). </entry>
+                  (default location).</entry>
                 </row>
               </tbody>
             </tgroup>
