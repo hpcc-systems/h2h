@@ -13,7 +13,7 @@
     <para>Download the appropriate package for your operating system
     from:</para>
 
-    <para><programlisting>http://hpccsystems.com/permlink/hadop-integration</programlisting></para>
+    <para><programlisting>http://hpccsystems.com/permlink/hadoop-integration</programlisting></para>
 
     <para>You must install the package on every HPCC node.</para>
 
@@ -179,9 +179,7 @@
         <listitem>
           <para>Download the <emphasis role="bold">HDFS Connector Library for
           IDE (ZIP)</emphasis> file from the HPCC web portal: <ulink
-          url="http://hpccsystems.com/products-and-services/products/modules/hadoop-integration">http://hpccsystems.com/products-and-services/products/modules/hadoop-integration</ulink></para>
-
-          <para></para>
+          url="http://hpccsystems.com/products-and-services/products/modules/hadoop-integration"></ulink><programlisting>http://hpccsystems.com/permlink/hadoop-integration</programlisting></para>
         </listitem>
 
         <listitem>
