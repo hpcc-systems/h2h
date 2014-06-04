@@ -18,5 +18,5 @@
 IF ( BUILD_WEBHDFS_VER )
 	set ( CPACK_RPM_PACKAGE_REQUIRES  "hpccsystems-platform, libcurl4 ")
 ELSE ()
-    set ( CPACK_RPM_PACKAGE_REQUIRES "hpccsystems-platform, hadoop, java-1_6_0-openjdk")
+    set ( CPACK_RPM_PACKAGE_REQUIRES "hpccsystems-platform, java-1_6_0-openjdk")
 ENDIF ()
