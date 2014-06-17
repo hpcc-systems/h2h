@@ -171,29 +171,34 @@ public:
 
     virtual bool validateParameters()
     {
+        bool validated = true;
+
         if (clusterCount <= 0)
         {
             fprintf(stderr, "\nInvalid cluster count detected: %d\n", clusterCount);
-            return false;
+            validated = false;
         }
 
         //nodeID is expected to be a 0-indexed value, as reported by thorlib.node()
         if (nodeID >= clusterCount)
         {
             fprintf(stderr, "\nInvalid nodeID detected: %d\n", nodeID);
-            return false;
+            validated = false;
         }
 
-        return true;
+        return validated;
     }
 
-    unsigned static inline getUnsignedIntFromStr(const char * strrepresentation)
+    unsigned static getUnsignedIntFromStr(const char * strrepresentation)
     {
         int tmp = atoi(strrepresentation);
         if (tmp >= 0)
-            return tmp;
+            return (unsigned)tmp;
         else
-            throw std::invalid_argument("Unexpected negative value detected.");
+        {
+            fprintf(stderr, "Unexpected value detected while converting string to unsigned value: %s.\n", strrepresentation);
+            throw;
+        }
     }
 
     bool parseInParams (int argc, char **argv)
@@ -233,6 +238,8 @@ public:
 
         action = HCA_INVALID;
 
+        bool allvalid = true;
+
         try
         {
             while (currParam < argc)
@@ -259,28 +266,28 @@ public:
                 }
                 else if (strcmp(argv[currParam], "-clustercount") == 0)
                 {
+                    fprintf(stderr, "clustercount: ");
                     try
                     {
                         clusterCount = getUnsignedIntFromStr(argv[++currParam]);
-                        fprintf(stderr, "clustercount: %d\n", clusterCount);
+                        fprintf(stderr, "%d\n", clusterCount);
                     }
                     catch(...)
                     {
-                        fprintf(stderr, "clustercount: Invalid value detected.\n");
-                        return false;
+                        allvalid = false;
                     }
                 }
                 else if (strcmp(argv[currParam], "-nodeid") == 0)
                 {
+                    fprintf(stderr, "nodeID: ");
                     try
                     {
                         nodeID = getUnsignedIntFromStr(argv[++currParam]);
-                        fprintf(stderr, "nodeID: %d\n", nodeID);
+                        fprintf(stderr, "%d\n", nodeID);
                     }
                     catch (...)
                     {
-                        fprintf(stderr, "nodeID: Invalid value detected.\n");
-                        return false;
+                        allvalid = false;
                     }
                 }
                 else if (strcmp(argv[currParam], "-reclen") == 0)
@@ -291,12 +298,15 @@ public:
                 else if (strcmp(argv[currParam], "-format") == 0)
                 {
                     const char * tmp = argv[++currParam];
-                    while (*tmp && *tmp != '(')
+                    while (tmp && *tmp && *tmp != '(')
                         format.append(1, *tmp++);
                     fprintf(stderr, "Format: %s\n", format.c_str());
-                    if (*tmp++)
-                        while (*tmp && *tmp != ')')
+                    if (tmp && *tmp && *tmp=='(')
+                    {
+                        tmp++;
+                        while (tmp && *tmp && *tmp != ')')
                             foptions.append(1, *tmp++);
+                    }
                 }
                 else if (strcmp(argv[currParam], "-rowtag") == 0)
                 {
@@ -315,7 +325,7 @@ public:
                 else if (strcmp(argv[currParam], "-port") == 0)
                 {
                     hadoopPort = atoi(argv[++currParam]);
-                    fprintf(stderr, "host: %d\n", hadoopPort);
+                    fprintf(stderr, "port: %d\n", hadoopPort);
                 }
                 else if (strcmp(argv[currParam], "-wuid") == 0)
                 {
@@ -404,7 +414,7 @@ public:
                 else
                 {
                     fprintf(stderr, "Error: Found invalid input param: %s \n", argv[currParam]);
-                    return false;
+                    allvalid = false;
                 }
                 currParam++;
             }
@@ -414,7 +424,7 @@ public:
             fprintf(stderr, "Error: found unexpected value while parsing input parameters\n");
             return false;
         }
-        return true;
+        return allvalid;
     }
 };
 
