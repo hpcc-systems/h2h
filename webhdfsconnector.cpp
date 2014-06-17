@@ -816,15 +816,26 @@ int main(int argc, char **argv)
 {
     int returnCode = EXIT_FAILURE;
 
-    webhdfsconnector * connector = new webhdfsconnector(argc, argv);
-
-    if (connector->connect())
-    {
-        returnCode = connector->execute();
-    }
+    webhdfsconnector * connector = new webhdfsconnector();
 
     if (connector)
-        delete (connector);
+    {
+       if (connector->parseInParams(argc, argv))
+       {
+           if (connector->validateParameters())
+           {
+               if (connector->connect())
+               {
+                   returnCode = connector->execute();
+               }
+           }
+
+           if (connector)
+               delete (connector);
+       }
+    }
+    else
+        fprintf(stderr, "\nError: Could not create webhdfs connector");
 
     return returnCode;
 }
