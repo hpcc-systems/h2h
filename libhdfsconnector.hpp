@@ -34,9 +34,9 @@ private:
 
  public:
 
-    libhdfsconnector(int argc, char **argv) : hdfsconnector(argc, argv)
+    libhdfsconnector() : hdfsconnector()
     {
-        fprintf(stderr, "\nCreating LIBHDFS based connector.\n");
+            fprintf(stderr, "\nCreating LIBHDFS based connector.\n");
     }
 
     ~libhdfsconnector()

@@ -113,7 +113,7 @@ private:
 
 public:
 
-    webhdfsconnector(int argc, char **argv) : hdfsconnector(argc, argv)
+    webhdfsconnector() : hdfsconnector()
     {
         fprintf(stderr, "\nCreating WEBBHDFS based connector.\n");
     }
