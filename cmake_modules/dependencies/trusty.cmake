@@ -14,10 +14,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
-MESSAGE("--- building Ubuntu 12.10 which is no longer supported --")
-#Ubuntu 12.10 Quantal
+
+#Ubuntu 14.04
 IF ( BUILD_WEBHDFS_VER )
 	set ( CPACK_DEBIAN_PACKAGE_DEPENDS "hpccsystems-platform, libcurl3, libcurl3-nss")
 ELSE ()
-    set ( CPACK_DEBIAN_PACKAGE_DEPENDS "hpccsystems-platform, openjdk-6-jre")
+    set ( CPACK_DEBIAN_PACKAGE_DEPENDS "hpccsystems-platform, openjdk-7-jre")
 ENDIF ()
