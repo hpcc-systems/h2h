@@ -936,15 +936,27 @@ int main(int argc, char **argv)
 {
     int returnCode = EXIT_FAILURE;
 
-    libhdfsconnector * connector = new libhdfsconnector(argc, argv);
-
-    if (connector->connect())
-    {
-        returnCode = connector->execute();
-    }
+    libhdfsconnector * connector = new libhdfsconnector();
 
     if (connector)
-        delete (connector);
+    {
+        if (connector->parseInParams(argc, argv))
+        {
+            if (connector->validateParameters())
+            {
+                if (connector->connect())
+                {
+                    returnCode = connector->execute();
+                }
+            }
+
+            if (connector)
+                delete (connector);
+        }
+    }
+    else
+        fprintf(stderr, "\nError: Could not create libhdfs connector");
+
 
     return returnCode;
 }
