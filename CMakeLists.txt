@@ -146,6 +146,7 @@ IF ( NOT MAKE_DOCS_ONLY )
     SET ( HDFSCONN_CONF_FILE "hdfsconnector.conf" )
     SET ( INSTALLDIR "${OSSDIR}/bin")
 
+    #THESE PATHS RELATE TO HADOOP deb/rpm INSTALL PACKAGE VERSIONS
     SET ( HADOOP_STD_CONF_PATH "/etc/hadoop" )
     SET ( HADOOP_STD_SHARE_PATH "/usr/share/hadoop" )
 

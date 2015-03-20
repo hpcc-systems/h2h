@@ -52,6 +52,8 @@ if (NOT LIBHDFS_FOUND)
         LIST (APPEND POSSILE_PATHS
              "${TARBALLED_HADOOP_PATH}/src/c++/libhdfs"
              "${TARBALLED_HADOOP_PATH}/c++/${hdfsosdir}/lib"
+             "${TARBALLED_HADOOP_PATH}/lib/native"
+             "${TARBALLED_HADOOP_PATH}/include"
            )
      ENDIF()
 
