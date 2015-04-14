@@ -25,6 +25,13 @@ set_environmentvars
 
 source $configs/@HDFSCONN_CONF_FILE@
 
+#Since batch doesn't allow simple decimal algebra, we have to parse
+#the target hadoop version
+OLDIFS=$IFS;
+IFS='.';
+VER_TOKS=( $HADOOP_VERSION )
+IFS=$OLDIFS;
+
 CLASSPATH=$CLASSPATH:$HADOOP_CONF_DIR
 
 ###################################################
@@ -37,34 +44,6 @@ CLASSPATH=$CLASSPATH:$HADOOP_CONF_DIR
 # However as it turns out, the jars are in different subfolders under the share directory
 #
 ###################################################
-for f in $HADOOP_SHARE_DIR/*.jar ; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
-for f in $HADOOP_SHARE_DIR/lib/*.jar ; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
-for f in $HADOOP_SHARE_DIR/hadoop/hdfs/*.jar ; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
-for f in $HADOOP_SHARE_DIR/hadoop/hdfs/lib/*.jar ; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
-for f in $HADOOP_SHARE_DIR/hadoop/common/*.jar ; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
-for f in $HADOOP_SHARE_DIR/hadoop/common/lib/*.jar ; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
-for f in $HADOOP_SHARE_DIR/hadoop/tools/lib/*.jar ; do
-    CLASSPATH=$CLASSPATH:$f
-done
-
 if [ -n "$TARBALL_HADOOP_LOCATION"  ]; then
     CLASSPATH=$CLASSPATH:$TARBALL_HADOOP_LOCATION/conf
 
@@ -73,6 +52,68 @@ if [ -n "$TARBALL_HADOOP_LOCATION"  ]; then
     done
 
     for f in $TARBALL_HADOOP_LOCATION/lib/*.jar ; do
+        CLASSPATH=$CLASSPATH:$f
+    done
+
+    if [ ${VER_TOKS[0]} -ge "2" ] && [ ${VER_TOKS[1]} -ge 5 ]; then
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/common/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/common/lib/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/hdfs/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/hdfs/lib/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/yarn/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/yarn/lib/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/mapreduce/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+
+        for f in $TARBALL_HADOOP_LOCATION/share/hadoop/mapreduce/lib/*.jar ; do
+           CLASSPATH=$CLASSPATH:$f;
+        done
+    fi
+else
+    for f in $HADOOP_SHARE_DIR/*.jar ; do
+        CLASSPATH=$CLASSPATH:$f
+    done
+
+    for f in $HADOOP_SHARE_DIR/lib/*.jar ; do
+        CLASSPATH=$CLASSPATH:$f
+    done
+
+    for f in $HADOOP_SHARE_DIR/hadoop/hdfs/*.jar ; do
+        CLASSPATH=$CLASSPATH:$f
+    done
+
+    for f in $HADOOP_SHARE_DIR/hadoop/hdfs/lib/*.jar ; do
+        CLASSPATH=$CLASSPATH:$f
+    done
+
+    for f in $HADOOP_SHARE_DIR/hadoop/common/*.jar ; do
+        CLASSPATH=$CLASSPATH:$f
+    done
+
+    for f in $HADOOP_SHARE_DIR/hadoop/common/lib/*.jar ; do
+        CLASSPATH=$CLASSPATH:$f
+    done
+
+    for f in $HADOOP_SHARE_DIR/hadoop/tools/lib/*.jar ; do
         CLASSPATH=$CLASSPATH:$f
     done
 fi

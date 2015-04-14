@@ -15,6 +15,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+#Product Name: ${CMAKE_PROJECT_NAME}-${version}-${stagever}${packageRevisionArch}
+
+#This version of H2H was built targeting hadoop version: ${HADOOP_VER}
+HADOOP_VERSION=${HADOOP_VER}
+
 #HADOOP_CONF_DIR = location of hadoop config files
 #if hadoop was installed via deb/rpm install package
 HADOOP_CONF_DIR=${HADOOP_STD_CONF_PATH}
@@ -48,8 +53,8 @@ H2H_LD_LIBRARY_PATH=${H2H_LIBHDFS_PATH}
 #TARBALL_HADOOP_LOCATION = location of tarball hadoop instalation
 #If hadoop was not installed via deb/rpm install package
 #enable this var.
-#NOTE: starting in 2.x, Hadoop stopped distributing pre-built native libraries
-#This value is most likely only useful for Hadoop distributions prior to 2.x
+#NOTE: starting in Hadoop version 2.2 until version 2.5.2, Hadoop stopped distributing pre-built 64bit libraries
+#This value is most likely only useful for Hadoop distributions prior to 2.2 and after 2.3
 TARBALL_HADOOP_LOCATION=${TARBALLED_HADOOP_PATH}
 
 #H2H default libjvm location:
@@ -59,7 +64,8 @@ TARBALL_HADOOP_LOCATION=${TARBALLED_HADOOP_PATH}
 #H2H_LD_LIBRARY_PATH=$H2H_LD_LIBRARY_PATH:${H2H_LIBJVM_PATH}
 H2H_LD_LIBRARY_PATH=$H2H_LD_LIBRARY_PATH:${H2H_LIBJVM_PATH}
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$H2H_LD_LIBRARY_PATH
-
 #LOGS_LOCATION = H2H log location
 LOGS_LOCATION=$log
+
+#DO NOT ALTER THIS LINE
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$H2H_LD_LIBRARY_PATH
