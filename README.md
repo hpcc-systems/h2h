@@ -13,6 +13,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+
+# H1 Please note that the H2H Connector is no longer actively supported & the assets provided on this page are offered for archival purposes.
+
 http://hpccsystems.com
 
 HPCC to Hadoop connector
